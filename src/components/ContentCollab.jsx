@@ -1,6 +1,6 @@
 import { Video, Image, Circle, FileText, Users, Check } from "lucide-react";
 import PlaceholderPhoto from "./PlaceholderPhoto";
-import { collaborations, contentTypes } from "../content";
+import { collaborations, contentCollabImage, contentTypes, profile } from "../content";
 
 const TYPE_ICONS = [Video, Image, Circle, FileText, Users];
 
@@ -10,6 +10,9 @@ export default function ContentCollab() {
       <div className="flex flex-col lg:flex-row">
         <PlaceholderPhoto
           tone="stone"
+          image={contentCollabImage}
+          alt={profile.name}
+          objectPosition="center 20%"
           className="h-72 w-full lg:h-auto lg:w-[26%]"
         />
 

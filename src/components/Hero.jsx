@@ -36,6 +36,9 @@ export default function Hero() {
         <div className="relative order-1 lg:order-2">
           <PlaceholderPhoto
             tone="stone"
+            image={profile.heroImage}
+            alt={profile.name}
+            objectPosition="center 15%"
             className="aspect-[4/5] w-full rounded-sm lg:aspect-auto lg:h-[480px]"
           >
             <DoodleHeart className="absolute top-8 right-10 hidden h-9 w-9 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:block" />

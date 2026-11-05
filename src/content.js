@@ -4,11 +4,17 @@
 // tocar los componentes.
 // ─────────────────────────────────────────────────────────────────────────
 
+import heroPhoto from "./assets/photos/hero.webp";
+import contentCollabPhoto from "./assets/photos/content-collab.webp";
+import lifestylePhoto from "./assets/photos/lifestyle.webp";
+import experienciasPhoto from "./assets/photos/experiencias.webp";
+
 export const profile = {
   name: "Camila Zanon",
   tagline: "Portfolio creadora de contenido",
   categories: ["Fitness", "Lifestyle", "Deporte", "Bienestar"],
   heroNote: "Contenido real,\nactivo y\ncon propósito.",
+  heroImage: heroPhoto,
   aboutTitle: "Sobre mí",
   aboutGreeting: "¡Hola! Soy Camila, creadora de contenido digital.",
   aboutParagraphs: [
@@ -26,14 +32,17 @@ export const aboutHighlights = [
   { icon: "star", label: "Experiencias & Marcas" },
 ];
 
-// Las fotos son placeholders — reemplazar "image" por la ruta real
-// (por ejemplo "/fotos/deporte.jpg") cuando tengamos el material de Camila.
+// Las fotos sin "image" siguen siendo placeholders — reemplazar por la ruta
+// real cuando tengamos más material de Camila para esas categorías.
 export const contentGrid = [
   { label: "Deporte", image: null },
   { label: "Gastronomía saludable", image: null },
-  { label: "Lifestyle", image: null },
-  { label: "Experiencias & aventuras", image: null },
+  { label: "Lifestyle", image: lifestylePhoto },
+  { label: "Experiencias & aventuras", image: experienciasPhoto, objectPosition: "22% 30%" },
 ];
+
+// Foto grande de la sección "Tipos de contenido / Colaboraciones".
+export const contentCollabImage = contentCollabPhoto;
 
 // Reemplazar los valores "null" por los números reales cuando los tengamos.
 export const stats = [

@@ -48,6 +48,9 @@ export default function About() {
               key={item.label}
               tone={TONES[i % TONES.length]}
               label={item.label}
+              image={item.image}
+              alt={item.label}
+              objectPosition={item.objectPosition ?? "center"}
               className="aspect-[3/4] rounded-sm"
             />
           ))}
