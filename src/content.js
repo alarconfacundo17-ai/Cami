@@ -10,8 +10,13 @@ export const profile = {
   categories: ["Fitness", "Lifestyle", "Deporte", "Bienestar"],
   heroNote: "Contenido real,\nactivo y\ncon propósito.",
   aboutTitle: "Sobre mí",
-  aboutText:
-    "Creadora de contenido y apasionada por el movimiento, el deporte y un estilo de vida saludable y equilibrado.",
+  aboutGreeting: "¡Hola! Soy Camila, creadora de contenido digital.",
+  aboutParagraphs: [
+    "Soy una persona curiosa, espontánea, activa y apasionada por descubrir cosas nuevas. Me gusta el deporte, el lifestyle, la moda, la gastronomía, el baile y, sobre todo, compartir un poquito de todo lo que forma parte de mi mundo.",
+    "Mi contenido refleja quién soy: genuino, natural y sin intentar mostrar una versión perfecta de la realidad. Me gusta mostrarme tal cual soy, con mi personalidad, mis ocurrencias y mi forma de ver las cosas.",
+    "Disfruto estar frente a cámara, las sesiones fotográficas y explorar distintas formas de comunicar y crear.",
+    "Mi esencia es ser yo misma, y eso es lo que quiero transmitir en cada contenido.",
+  ],
 };
 
 export const aboutHighlights = [

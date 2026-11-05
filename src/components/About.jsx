@@ -8,15 +8,26 @@ const TONES = ["cool", "sunset", "stone", "warm"];
 export default function About() {
   return (
     <section id="sobre-mi" className="bg-cream py-20 lg:py-24">
-      <div className="mx-auto flex max-w-7xl flex-col gap-12 px-6 lg:flex-row lg:gap-10 lg:px-10">
-        <div className="lg:w-[30%] lg:shrink-0">
+      <div className="mx-auto flex max-w-7xl flex-col gap-12 px-6 lg:flex-row lg:items-start lg:gap-10 lg:px-10">
+        <div className="lg:w-[34%] lg:shrink-0">
           <h2 className="font-serif-display text-4xl text-ink sm:text-5xl">
             {profile.aboutTitle}
           </h2>
 
-          <p className="mt-5 max-w-sm text-base font-light leading-relaxed text-ink/80">
-            {profile.aboutText}
+          <p className="mt-5 max-w-md text-base font-medium leading-relaxed text-ink">
+            {profile.aboutGreeting}
           </p>
+
+          <div className="mt-4 flex max-w-md flex-col gap-4">
+            {profile.aboutParagraphs.map((paragraph, i) => (
+              <p
+                key={i}
+                className="text-base font-light leading-relaxed text-ink/80"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
 
           <ul className="mt-8 flex flex-col gap-4">
             {aboutHighlights.map(({ icon, label }) => {
