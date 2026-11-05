@@ -7,7 +7,7 @@
 import heroPhoto from "./assets/photos/hero.webp";
 import contentCollabPhoto from "./assets/photos/content-collab.webp";
 import lifestylePhoto from "./assets/photos/lifestyle.webp";
-import experienciasPhoto from "./assets/photos/experiencias.webp";
+import travelLakePhoto from "./assets/photos/travel-lake.webp";
 
 export const profile = {
   name: "Camila Zanon",
@@ -38,7 +38,7 @@ export const contentGrid = [
   { label: "Deporte", image: null },
   { label: "Gastronomía saludable", image: null },
   { label: "Lifestyle", image: lifestylePhoto },
-  { label: "Experiencias & aventuras", image: experienciasPhoto, objectPosition: "22% 30%" },
+  { label: "Experiencias & aventuras", image: travelLakePhoto, objectPosition: "center 25%" },
 ];
 
 // Foto grande de la sección "Tipos de contenido / Colaboraciones".
