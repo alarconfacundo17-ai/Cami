@@ -64,9 +64,9 @@ export const collaborations = [
 export const brands = ["Nike", "BeFit", "Ringana", "VentoFit", "BeastLabs"];
 
 export const socials = {
-  instagram: "https://instagram.com/",
-  tiktok: "https://tiktok.com/@",
-  email: "hola@camilazanon.com",
+  instagram: "https://instagram.com/camizanon_",
+  tiktok: "https://tiktok.com/@camizanon",
+  email: "camilitazanoncz@gmail.com",
 };
 
 export const nav = [

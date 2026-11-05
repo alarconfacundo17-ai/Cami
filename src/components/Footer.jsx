@@ -1,4 +1,5 @@
-import { Mail, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight, Music2 } from "lucide-react";
+import { InstagramIcon } from "./doodles";
 import { brands, socials } from "../content";
 
 const currentYear = new Date().getFullYear();
@@ -35,8 +36,28 @@ export default function Footer() {
         </a>
       </div>
 
-      <div className="border-t border-white/10 px-6 py-5 text-center text-xs font-light text-white/50 lg:px-10 lg:text-left">
-        © {currentYear} Camila Zanon — Todos los derechos reservados.
+      <div className="flex flex-col items-center gap-4 border-t border-white/10 px-6 py-5 text-center text-xs font-light text-white/50 lg:flex-row lg:justify-between lg:px-10 lg:text-left">
+        <p>© {currentYear} Camila Zanon — Todos los derechos reservados.</p>
+        <div className="flex items-center gap-4">
+          <a
+            href={socials.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            className="text-white/60 transition-colors hover:text-white"
+          >
+            <InstagramIcon size={18} strokeWidth={1.5} />
+          </a>
+          <a
+            href={socials.tiktok}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="TikTok"
+            className="text-white/60 transition-colors hover:text-white"
+          >
+            <Music2 size={18} strokeWidth={1.5} />
+          </a>
+        </div>
       </div>
     </footer>
   );
