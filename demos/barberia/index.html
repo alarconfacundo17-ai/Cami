@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Filo Barbería · Cortes y barba</title>
+<meta name="description" content="Barbería en el barrio. Cortes, barba y afeitado clásico. Sacá turno por WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap">
+<style>
+  /* ===== Cambiá estos datos para cada cliente ===== */
+  :root {
+    --bg: #111;
+    --bg2: #1b1b1b;
+    --text: #f2efe9;
+    --muted: #a8a29a;
+    --accent: #d4a24c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.6; }
+  a { color: inherit; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+  h1, h2 { font-family: "Bebas Neue", Impact, sans-serif; letter-spacing: 1px; font-weight: 400; }
+  h2 { font-size: 2.6rem; margin-bottom: 24px; }
+  h2 span { color: var(--accent); }
+  section { padding: 72px 0; }
+
+  /* Nav */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(17,17,17,.92); backdrop-filter: blur(6px); border-bottom: 1px solid #2a2a2a; }
+  nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  .logo { font-family: "Bebas Neue", sans-serif; font-size: 1.7rem; text-decoration: none; }
+  .logo span { color: var(--accent); }
+  nav ul { display: flex; gap: 20px; list-style: none; }
+  nav ul a { text-decoration: none; color: var(--muted); font-size: .95rem; }
+  nav ul a:hover { color: var(--text); }
+  @media (max-width: 600px) { nav ul { display: none; } }
+
+  /* Hero */
+  .hero { min-height: 85vh; display: flex; align-items: center; text-align: center;
+    background: radial-gradient(circle at 50% 30%, #2b2316 0%, var(--bg) 70%); }
+  .hero h1 { font-size: clamp(3.5rem, 12vw, 7rem); line-height: .95; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--muted); font-size: 1.15rem; margin: 18px auto 32px; max-width: 520px; }
+  .btn { display: inline-block; background: var(--accent); color: #111; font-weight: 600; padding: 14px 28px;
+    border-radius: 6px; text-decoration: none; border: 0; font-size: 1rem; cursor: pointer; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid #444; margin-left: 8px; }
+
+  /* Servicios */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .card { background: var(--bg2); border: 1px solid #2a2a2a; border-radius: 10px; padding: 24px; }
+  .card h3 { font-size: 1.1rem; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: .95rem; }
+  .price { color: var(--accent); font-weight: 600; font-size: 1.3rem; margin-top: 12px; }
+
+  /* Galería */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .gallery div { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: flex-end; padding: 10px;
+    font-size: .85rem; color: var(--muted); }
+  .g1 { background: linear-gradient(135deg,#3a2d1a,#1b1b1b); }
+  .g2 { background: linear-gradient(135deg,#1b1b1b,#2e2e2e); }
+  .g3 { background: linear-gradient(135deg,#2a1f12,#3d3020); }
+  @media (max-width: 600px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Turnos */
+  .alt { background: var(--bg2); }
+  form { display: grid; gap: 14px; max-width: 480px; }
+  label { font-size: .9rem; color: var(--muted); display: grid; gap: 6px; }
+  input, select { background: var(--bg); color: var(--text); border: 1px solid #333; border-radius: 6px;
+    padding: 12px; font: inherit; width: 100%; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* Info */
+  .info { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; }
+  .info h3 { color: var(--accent); margin-bottom: 8px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+  .info p, .info li { color: var(--muted); list-style: none; }
+  iframe { width: 100%; height: 260px; border: 0; border-radius: 10px; filter: grayscale(1) invert(.9); }
+
+  footer { text-align: center; padding: 28px 16px; color: #666; font-size: .85rem; border-top: 1px solid #222; }
+
+  /* Botón flotante de WhatsApp */
+  .wa { position: fixed; right: 18px; bottom: 18px; width: 58px; height: 58px; border-radius: 50%;
+    background: #25d366; display: grid; place-items: center; box-shadow: 0 4px 14px rgba(0,0,0,.4); z-index: 20; }
+  .wa svg { width: 30px; height: 30px; fill: #fff; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="logo">El <span>Filo</span></a>
+    <ul>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#trabajos">Trabajos</a></li>
+      <li><a href="#turnos">Turnos</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Cortes con <span>oficio</span></h1>
+    <p>Barbería de barrio con más de 10 años. Corte, barba y afeitado a navaja. Sin vueltas.</p>
+    <a href="#turnos" class="btn">Sacar turno</a>
+    <a href="#servicios" class="btn ghost">Ver precios</a>
+  </div>
+</header>
+
+<section id="servicios">
+  <div class="wrap">
+    <h2>Servicios <span>&amp;</span> precios</h2>
+    <div class="grid">
+      <div class="card"><h3>Corte clásico</h3><p>Tijera y máquina, lavado incluido.</p><div class="price">$12.000</div></div>
+      <div class="card"><h3>Corte + barba</h3><p>El combo más pedido. Perfilado con navaja.</p><div class="price">$18.000</div></div>
+      <div class="card"><h3>Afeitado clásico</h3><p>Toalla caliente, espuma y navaja.</p><div class="price">$10.000</div></div>
+      <div class="card"><h3>Corte infantil</h3><p>Hasta 12 años.</p><div class="price">$9.000</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="trabajos" class="alt">
+  <div class="wrap">
+    <h2>Nuestros <span>trabajos</span></h2>
+    <!-- Reemplazar por fotos reales del cliente: <img src="foto1.jpg"> -->
+    <div class="gallery">
+      <div class="g1">Fade</div><div class="g2">Barba</div><div class="g3">Clásico</div>
+      <div class="g2">Texturizado</div><div class="g3">Navaja</div><div class="g1">Diseño</div>
+    </div>
+  </div>
+</section>
+
+<section id="turnos">
+  <div class="wrap">
+    <h2>Sacá tu <span>turno</span></h2>
+    <p style="color:var(--muted);margin-bottom:24px">Completá y te llega directo a nuestro WhatsApp. Te confirmamos en el día.</p>
+    <form id="turno">
+      <label>Tu nombre <input name="nombre" required placeholder="Juan"></label>
+      <label>Servicio
+        <select name="servicio">
+          <option>Corte clásico</option><option>Corte + barba</option>
+          <option>Afeitado clásico</option><option>Corte infantil</option>
+        </select>
+      </label>
+      <div class="row">
+        <label>Día <input type="date" name="dia" required></label>
+        <label>Hora <input type="time" name="hora" min="10:00" max="20:00" required></label>
+      </div>
+      <button class="btn" type="submit">Pedir turno por WhatsApp</button>
+    </form>
+  </div>
+</section>
+
+<section id="contacto" class="alt">
+  <div class="wrap info">
+    <div>
+      <h3>Dónde estamos</h3>
+      <p>Av. Siempre Viva 742<br>Buenos Aires</p>
+    </div>
+    <div>
+      <h3>Horarios</h3>
+      <ul><li>Mar a Vie · 10 a 20 h</li><li>Sábados · 10 a 18 h</li><li>Dom y Lun · cerrado</li></ul>
+    </div>
+    <div>
+      <h3>Seguinos</h3>
+      <p><a href="https://instagram.com/" target="_blank" rel="noopener">@elfilobarberia</a></p>
+    </div>
+    <iframe src="https://www.google.com/maps?q=Obelisco,Buenos+Aires&output=embed" loading="lazy" title="Mapa"></iframe>
+  </div>
+</section>
+
+<footer>© El Filo Barbería · Sitio de demostración</footer>
+
+<a class="wa" id="wa" href="#" aria-label="Escribinos por WhatsApp" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/></svg>
+</a>
+
+<script>
+  // Número de WhatsApp del negocio: código de país + área + número, sin espacios ni "+".
+  const WHATSAPP = "5491100000000";
+
+  document.getElementById("wa").href = "https://wa.me/" + WHATSAPP;
+
+  // No dejar elegir días pasados
+  document.querySelector('[name="dia"]').min = new Date().toISOString().split("T")[0];
+
+  document.getElementById("turno").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const d = new FormData(e.target);
+    const fecha = new Date(d.get("dia") + "T00:00").toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
+    const msg = `Hola! Soy ${d.get("nombre")}. Quiero un turno para *${d.get("servicio")}* el ${fecha} a las ${d.get("hora")}. ¿Hay lugar?`;
+    window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg), "_blank");
+  });
+</script>
+</body>
+</html>
