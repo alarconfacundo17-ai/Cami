@@ -1,7 +1,9 @@
 # Videos del canal
 
-Cada carpeta tiene el script que arma un video a partir de las imágenes y la voz generadas en Buzzy.
+Historias de terror cortas (TikTok / Reels / Shorts) hechas con imágenes y voz de Buzzy.
 
-- `ruta40/build.py`: historia de terror "Ruta 40" (31 s). Usa r1–r9.png (imágenes), r2_off.png (espejo con luces apagadas) y voz.mp3 (voz de Alonso, ElevenLabs). Agrega pausas a la voz, cortes con zoom, subtítulos palabra por palabra y sonido de suspenso.
+- `build_story.py`: arma cualquier historia a partir de un `config.json` (imágenes, voz, tiempos de cada palabra, tomas, subtítulos y sonido). Uso: `python3 build_story.py <carpeta>/config.json`.
+- `subte/`: "El último subte". Imágenes s1–s7.png, voz de Alonso (ElevenLabs).
+- `ruta40/`: "Ruta 40" (script propio anterior, `build.py`).
 
-Las imágenes y audios no se suben al repo; se bajan de Buzzy.
+Las imágenes, audios y videos no se suben al repo (ver `.gitignore`); se bajan de Buzzy.
