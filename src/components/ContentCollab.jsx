@@ -1,10 +1,12 @@
 import { Video, Image, Circle, FileText, Users, Check } from "lucide-react";
 import PlaceholderPhoto from "./PlaceholderPhoto";
-import { collaborations, contentCollabImage, contentTypes, profile } from "../content";
+import { useSiteContent } from "../siteContent/SiteContentContext";
 
 const TYPE_ICONS = [Video, Image, Circle, FileText, Users];
 
 export default function ContentCollab() {
+  const { content } = useSiteContent();
+  const { collaborations, contentCollabImage, contentTypes, profile } = content;
   return (
     <section className="bg-cream">
       <div className="flex flex-col lg:flex-row">

@@ -1,8 +1,10 @@
 import PlaceholderPhoto from "./PlaceholderPhoto";
 import { DoodleArrow, DoodleHeart } from "./doodles";
-import { profile } from "../content";
+import { useSiteContent } from "../siteContent/SiteContentContext";
 
 export default function Hero() {
+  const { content } = useSiteContent();
+  const { profile } = content;
   return (
     <section
       id="inicio"

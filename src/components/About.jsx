@@ -1,11 +1,13 @@
 import { Dumbbell, Apple, Camera, Star } from "lucide-react";
 import PlaceholderPhoto from "./PlaceholderPhoto";
-import { aboutHighlights, contentGrid, profile } from "../content";
+import { useSiteContent } from "../siteContent/SiteContentContext";
 
 const ICONS = { dumbbell: Dumbbell, apple: Apple, camera: Camera, star: Star };
 const TONES = ["cool", "sunset", "stone", "warm"];
 
 export default function About() {
+  const { content } = useSiteContent();
+  const { profile, aboutHighlights, contentGrid } = content;
   return (
     <section id="sobre-mi" className="bg-cream py-20 lg:py-24">
       <div className="mx-auto flex max-w-7xl flex-col gap-12 px-6 lg:flex-row lg:items-start lg:gap-10 lg:px-10">
@@ -31,7 +33,7 @@ export default function About() {
 
           <ul className="mt-8 flex flex-col gap-4">
             {aboutHighlights.map(({ icon, label }) => {
-              const Icon = ICONS[icon];
+              const Icon = ICONS[icon] ?? Star;
               return (
                 <li key={label} className="flex items-center gap-3">
                   <Icon size={19} strokeWidth={1.5} className="shrink-0 text-ink" />

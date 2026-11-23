@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { nav, profile } from "../content";
+import { nav, useSiteContent } from "../siteContent/SiteContentContext";
 
 export default function Navbar() {
+  const { content } = useSiteContent();
+  const { profile } = content;
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 

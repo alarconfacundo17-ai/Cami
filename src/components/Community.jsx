@@ -1,11 +1,13 @@
 import { Music2, BarChart3, Play } from "lucide-react";
 import { InstagramIcon } from "./doodles";
-import { socials, stats } from "../content";
+import { useSiteContent } from "../siteContent/SiteContentContext";
 
 const ICONS = { instagram: InstagramIcon, tiktok: Music2, chart: BarChart3, play: Play };
-const LINKS = { instagram: socials.instagram, tiktok: socials.tiktok };
 
 export default function Community() {
+  const { content } = useSiteContent();
+  const { socials, stats } = content;
+  const LINKS = { instagram: socials.instagram, tiktok: socials.tiktok };
   return (
     <section id="metricas" className="scroll-mt-24 bg-ink py-10 text-white">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 px-6 lg:flex-row lg:gap-14 lg:px-10">

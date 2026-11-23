@@ -1,19 +1,13 @@
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Community from "./components/Community";
-import ContentCollab from "./components/ContentCollab";
-import Footer from "./components/Footer";
+import { SiteContentProvider } from "./siteContent/SiteContentContext";
+import PublicSite from "./PublicSite";
+import AdminApp from "./admin/AdminApp";
+
+const isAdminRoute = window.location.pathname.startsWith("/admin");
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-cream">
-      <Navbar />
-      <Hero />
-      <About />
-      <Community />
-      <ContentCollab />
-      <Footer />
-    </div>
+    <SiteContentProvider>
+      {isAdminRoute ? <AdminApp /> : <PublicSite />}
+    </SiteContentProvider>
   );
 }

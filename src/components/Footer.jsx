@@ -1,10 +1,12 @@
 import { Mail, ArrowRight, Music2 } from "lucide-react";
 import { InstagramIcon } from "./doodles";
-import { brands, socials } from "../content";
+import { useSiteContent } from "../siteContent/SiteContentContext";
 
 const currentYear = new Date().getFullYear();
 
 export default function Footer() {
+  const { content } = useSiteContent();
+  const { brands, socials } = content;
   return (
     <footer id="contacto" className="scroll-mt-24 bg-ink text-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:flex-row lg:items-center lg:justify-between lg:gap-10 lg:px-10">
