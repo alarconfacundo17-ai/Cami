@@ -1,0 +1,80 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Estilo "colorido": escenas propias del video en data.js (window.SCENE(api)). Usa words.js para los tiempos. -->
+<style>
+  :root { --dark:#2A1C12; --dark2:#3B2819; --yellow:#F6C945; --cream:#FFF4D6; --ink:#1A120C; --red:#E5483B; --green:#2FA36B; --wa:#DCF8C6; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1080px; height:1920px; overflow:hidden; font-family:Inter, sans-serif; color:var(--ink); }
+  #bg { position:absolute; inset:0; background:var(--dark); }
+  .abs { position:absolute; }
+  .layer { position:absolute; inset:0; opacity:0; }
+  /* celular */
+  .phone { position:absolute; left:250px; top:250px; width:580px; height:1040px; background:#111; border-radius:70px; padding:22px; box-shadow:0 40px 80px rgba(0,0,0,.45); transform-origin:50% 50%; }
+  .screen { width:100%; height:100%; border-radius:52px; overflow:hidden; background:#ECE5DD; position:relative; }
+  .wahead { height:130px; background:#075E54; display:flex; align-items:center; gap:22px; padding:40px 30px 0; color:#fff; }
+  .ava { width:70px; height:70px; border-radius:50%; background:#F6C945; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:34px; color:#2A1C12; transition:none; }
+  .wname { font-weight:700; font-size:34px; } .wstat { font-size:24px; opacity:.85; }
+  .chat { position:absolute; left:0; right:0; top:150px; bottom:20px; padding:0 24px; display:flex; flex-direction:column; gap:18px; }
+  .b { max-width:82%; padding:18px 24px; border-radius:26px; font-size:36px; font-weight:600; line-height:1.25; opacity:0; box-shadow:0 2px 0 rgba(0,0,0,.08); }
+  .b.in { align-self:flex-start; background:#fff; border-top-left-radius:6px; }
+  .b.out { align-self:flex-end; background:var(--wa); border-top-right-radius:6px; }
+  .tick { display:block; text-align:right; font-size:22px; color:#53BDEB; margin-top:4px; font-weight:700; }
+  .typing { align-self:flex-start; background:#fff; padding:20px 26px; border-radius:26px; display:flex; gap:10px; opacity:0; }
+  .typing i { width:14px; height:14px; border-radius:50%; background:#999; display:block; }
+  .stamp { position:absolute; font-weight:900; letter-spacing:2px; border:10px solid currentColor; border-radius:18px; padding:10px 26px; opacity:0; text-transform:uppercase; }
+  /* tarjetas */
+  .card3 { position:absolute; width:290px; height:380px; background:var(--cream); border:8px solid var(--ink); border-radius:30px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; opacity:0; box-shadow:0 14px 0 var(--ink); }
+  .card3 .n { position:absolute; top:-40px; left:-30px; width:84px; height:84px; border-radius:50%; background:var(--ink); color:var(--yellow); font-weight:900; font-size:48px; display:flex; align-items:center; justify-content:center; }
+  .card3 .t { font-weight:800; font-size:38px; text-align:center; line-height:1.1; padding:0 18px; }
+  .card3 .ic { font-size:96px; line-height:1; }
+  .ok { position:absolute; top:-26px; right:-26px; width:72px; height:72px; border-radius:50%; background:var(--green); color:#fff; font-size:46px; font-weight:900; display:flex; align-items:center; justify-content:center; opacity:0; border:6px solid var(--ink); }
+  /* barra de ventas */
+  #sales { position:absolute; left:110px; top:110px; width:860px; height:110px; background:var(--ink); border-radius:28px; padding:18px 30px; color:#fff; opacity:0; }
+  #sales .lab { font-weight:700; font-size:30px; display:flex; justify-content:space-between; }
+  #sales .lab b { color:var(--yellow); font-size:40px; margin-top:-6px; }
+  #sales .track { height:20px; background:#4a3a2c; border-radius:10px; margin-top:8px; overflow:hidden; }
+  #sales .fill { height:100%; width:0; background:linear-gradient(90deg,var(--yellow),#FFD86B); border-radius:10px; }
+  /* subtítulos */
+  #cap { position:absolute; left:60px; right:60px; top:1420px; text-align:center; font-weight:900; font-size:78px; line-height:1.15; color:#fff; letter-spacing:-1px; text-shadow:0 6px 0 rgba(0,0,0,.35); }
+  #cap .k { background:var(--yellow); color:var(--ink); padding:0 14px; border-radius:14px; text-shadow:none; display:inline-block; }
+  #cap .w { display:inline-block; }
+  #cap.onlight .k { background:var(--ink); color:var(--yellow); }
+  #cap .pill { display:inline-block; background:rgba(26,18,12,.88); padding:14px 28px; border-radius:30px; }
+  #cap.onlight .pill { background:none; padding:0; }
+</style></head>
+<body>
+<div id="bg"></div>
+<div id="stage"></div>
+<div id="sales"><div class="lab"><span>VENTAS CERRADAS</span><b id="pct">0%</b></div><div class="track"><div class="fill" id="fill"></div></div></div>
+<div id="cap"></div>
+<script src="words.js"></script>
+<script>
+const W = window.WORDS;
+const clamp=x=>Math.max(0,Math.min(1,x));
+const eo=(t,a,d=0.35)=>{const x=clamp((t-a)/d); return 1-Math.pow(1-x,3);};
+const back=(t,a,d=0.5)=>{const x=clamp((t-a)/d); const c=2.2; return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2);};
+const w = i => W[i][1];
+const anim=[]; window.POPS=[]; window.WHOOSH=[];
+function el(html,parent){ const d=document.createElement('div'); d.innerHTML=html.trim(); const e=d.firstChild; (parent||document.getElementById('stage')).appendChild(e); return e; }
+function pop(e,a,sound=true){ anim.push(t=>{ e.style.opacity=clamp((t-a)/0.12); const s=back(t,a); e.style.transform=(e.dataset.base||'')+` scale(${Math.max(0,s)})`; }); if(sound) POPS.push(a); }
+function fadeIn(e,a,d=0.3){ anim.push(t=>{ e.style.opacity=eo(t,a,d); }); }
+function layer(a,b){ const L=el('<div class="layer"></div>'); anim.push(t=>{ L.style.opacity = (t>=a-0.001 && t<b) ? 1 : 0; }); if(a>0) WHOOSH.push(a); return L; }
+function bgAt(list){ anim.push(t=>{ let c=list[0][1]; for(const [a,col] of list) if(t>=a) c=col; document.getElementById('bg').style.background=c;
+  const light = ['#FFF4D6','#F6C945'].includes(c.toUpperCase()); const C=document.getElementById('cap'); C.style.color = light ? '#1A120C' : '#fff'; C.style.textShadow = light ? 'none' : '0 6px 0 rgba(0,0,0,.35)'; C.classList.toggle('onlight', light); }); }
+function phone(parent, name){ const p=el(`<div class="phone"><div class="screen"><div class="wahead"><div class="ava">${name[0]}</div><div><div class="wname">${name}</div><div class="wstat">en línea</div></div></div><div class="chat"></div></div></div>`, parent); return { root:p, chat:p.querySelector('.chat'), stat:p.querySelector('.wstat'), ava:p.querySelector('.ava') }; }
+function bubble(ph, who, html, a, sound=true){ const b=el(`<div class="b ${who}">${html}</div>`, ph.chat); pop(b,a,sound); return b; }
+function stamp(parent, text, color, x, y, rot, size, a){ const s=el(`<div class="stamp" style="left:${x}px; top:${y}px; color:${color}; font-size:${size}px"></div>`, parent); s.textContent=text; s.dataset.base=`rotate(${rot}deg)`; anim.push(t=>{ const k=clamp((t-a)/0.18); s.style.opacity=k; s.style.transform=`rotate(${rot}deg) scale(${2-k})`; }); POPS.push(a); return s; }
+function sales(points){ const S=document.getElementById('sales'); anim.push(t=>{ let v=null, vis=false; for(let i=0;i<points.length;i++){ const [a,val]=points[i]; if(t>=a){ vis=val!==null; const nx=points[i+1]; v = (nx && nx[1]!==null && val!==null) ? val+(nx[1]-val)*eo(t,a,nx[0]-a) : val; } } S.style.opacity=vis?1:0; if(v!==null){ document.getElementById('fill').style.width=v+'%'; document.getElementById('pct').textContent=Math.round(v)+'%'; } }); }
+function captions(keys){ const ks=keys.map(k=>k.toLowerCase()); const groups=[]; let g=[];
+  W.forEach((x,i)=>{ g.push(i); if(/[.,:;?!…"]$/.test(x[0]) || g.length>=3){ groups.push(g); g=[]; } }); if(g.length) groups.push(g);
+  const C=document.getElementById('cap');
+  anim.push(t=>{ let cur=null; for(const gr of groups){ if(t>=W[gr[0]][1]-0.05) cur=gr; } if(!cur){ C.innerHTML=''; return; }
+    C.innerHTML=cur.map(i=>{ const raw=W[i][0].replace(/["“”]/g,''); const core=raw.replace(/[.,:;…]+$/,'').replace(/^[¿¡]/,'').replace(/[?!]$/,''); const on=t>=W[i][1]-0.03;
+      const k=ks.includes(core.toLowerCase()); const sc= on ? 1+0.12*Math.max(0,1-(t-W[i][1])/0.18) : 1;
+      return `<span class="w${k?' k':''}" style="opacity:${on?1:0}; transform:scale(${sc})">${raw}</span>`; }).join(' '); C.innerHTML='<span class="pill">'+C.innerHTML+'</span>'; }); }
+window.API = { W, w, el, pop, fadeIn, layer, bgAt, phone, bubble, stamp, sales, captions, anim, eo, back, clamp };
+window.render = t => anim.forEach(f=>f(t));
+</script>
+<script src="data.js"></script>
+<script>window.SCENE(window.API); window.render(0);</script>
+</body></html>

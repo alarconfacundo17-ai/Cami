@@ -9,7 +9,7 @@ const fs = require('fs'), path = require('path');
   const dir = path.resolve(process.argv[2]);
   const words = JSON.parse(fs.readFileSync(path.join(dir, 'words.json'), 'utf8'));
   fs.writeFileSync(path.join(dir, 'words.js'), 'window.WORDS=' + JSON.stringify(words) + ';');
-  fs.copyFileSync(path.join(__dirname, 'template.html'), path.join(dir, 'index.html'));
+  fs.copyFileSync(path.join(__dirname, process.env.TEMPLATE || 'template.html'), path.join(dir, 'index.html'));
 
   const FPS = 30;
   const browser = await chromium.launch();
