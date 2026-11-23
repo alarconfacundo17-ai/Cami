@@ -47,11 +47,22 @@ export default function AdminDashboard() {
       [key]: f[key].map((item, idx) => (idx === i ? { ...item, ...patch } : item)),
     }));
 
+  const [saveError, setSaveError] = useState("");
+
   const handleSave = async () => {
     setSaving(true);
-    await supabase
+    setSaveError("");
+    const { error } = await supabase
       .from("site_content")
       .upsert({ id: 1, data: form, updated_at: new Date().toISOString() });
+
+    if (error) {
+      console.error(error);
+      setSaving(false);
+      setSaveError("No se pudo guardar: " + error.message);
+      return;
+    }
+
     await refresh();
     setSaving(false);
     setSavedAt(Date.now());
@@ -277,8 +288,8 @@ export default function AdminDashboard() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-between bg-ink px-6 py-4 text-white">
-        <span className="text-xs text-white/60">
-          {savedAt ? "Guardado ✓" : "Los cambios de texto y fotos se guardan al tocar Guardar."}
+        <span className={`text-xs ${saveError ? "text-red-400" : "text-white/60"}`}>
+          {saveError || (savedAt ? "Guardado ✓" : "Los cambios de texto y fotos se guardan al tocar Guardar.")}
         </span>
         <button
           type="button"

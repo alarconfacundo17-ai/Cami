@@ -26,6 +26,13 @@ create policy "site_content is editable by logged-in admin"
   using (true)
   with check (true);
 
+-- El guardado del panel usa upsert (insert con "on conflict"), así que
+-- además del permiso de update hace falta este de insert.
+create policy "site_content is insertable by logged-in admin"
+  on site_content for insert
+  to authenticated
+  with check (true);
+
 -- Galería libre: fotos/videos que Camila puede agregar o sacar cuando
 -- quiera, sin estar atados a un lugar fijo del diseño.
 create table if not exists gallery_items (
