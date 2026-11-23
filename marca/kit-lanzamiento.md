@@ -7,7 +7,7 @@ Alternativas si está tomado: @negocios.ia.ar · @tunegocioconia · @atajo.negoc
 Es el mismo nombre que ya aparece arriba en los videos, así todo queda coherente.
 
 ## Foto de perfil
-`perfil-a.png` (círculo verde con "IA · NEGOCIOS"). Opciones: `perfil-b.png` (flecha que sube), `perfil-c.png` (globo "+IA").
+**Elegida:** `perfil-b.png` (círculo negro con flecha verde que sube). Otras opciones: `perfil-a.png`, `perfil-c.png`.
 
 ## Biografías
 **TikTok** (máx. 80):
