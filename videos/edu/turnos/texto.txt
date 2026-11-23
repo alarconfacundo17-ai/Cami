@@ -1,0 +1,6 @@
+upper:turnos
+Si tienes un negocio con turnos, deja de contestar cincuenta mensajes por día. Así funciona un sistema de turnos online.
+Uno. Tu cliente entra a un link y ve los horarios libres.
+Dos. Elige día y hora, y el turno queda agendado al instante.
+Tres. Tú lo ves todo en el calendario de tu celular, sin responder un solo mensaje.
+Sirve para peluquerías, consultorios, gimnasios y más. Comenta turnos y te muestro uno.

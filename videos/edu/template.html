@@ -106,7 +106,7 @@ function build(D){
       anim.push(t=>{ if(t>=a) document.getElementById('counter').textContent=''; });
       const ic=el('<div class="abs" style="left:390px; top:430px"></div>',S); ic.innerHTML=ICONS.comment; popScale(ic,s.at);
       const kw=el(`<div class="abs" style="left:0; width:1080px; top:500px; text-align:center; color:#fff; font-weight:800; font-size:${s.keyword.length>5?52:s.keyword.length>3?66:90}px">${s.keyword}</div>`,S); popScale(kw,s.at+0.1,false);
-      const l1=el(`<div class="abs big" style="left:60px; width:960px; top:830px; text-align:center">Comentá <span class="green">${s.keyword}</span></div>`,S); pop(l1,s.at);
+      const l1=el(`<div class="abs big" style="left:60px; width:960px; top:830px; text-align:center">Comenta <span class="green">${s.keyword}</span></div>`,S); pop(l1,s.at);
       const l2=el(`<div class="abs" style="left:60px; width:960px; top:980px; text-align:center; font-size:50px; font-weight:600; color:#444">${s.sub}</div>`,S); pop(l2,s.subAt);
       anim.push(t=>{ ic.style.translate=`0 ${t>s.at+0.6? -Math.abs(Math.sin((t-s.at-0.6)*4))*24*Math.exp(-(t-s.at-0.6)*0.8):0}px`; });
     }

@@ -20,6 +20,6 @@ window.DATA = {
         { tag:'2', text:'Esperar tu respuesta', at:T('cada') },
         { tag:'3', text:'Preguntar el precio', at:T('paso') },
         { mark:'bad', text:'Se cansó y se fue', at:T('cliente') } ] } },
-    { type:'cta', from:T('comentá'), at:T('comentá'), keyword:'PERFIL', sub:'y te digo cómo arreglar el tuyo', subAt:T('digo') }
+    { type:'cta', from:T('comenta'), at:T('comenta'), keyword:'PERFIL', sub:'y te digo cómo arreglar el tuyo', subAt:T('digo') }
   ]
 };

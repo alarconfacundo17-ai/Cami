@@ -27,8 +27,8 @@ for ch, t in zip(al["characters"], al["character_start_times_seconds"]):
     if not cur: start = t
     cur += ch
 if cur: words.append([cur, start])
-for w in words:
-    core = w[0].strip('.,:;!?"“”').lower()
-    if core in upper: w[0] = w[0].replace(w[0].strip('.,:;!?"“”'), core.upper())
+for k in upper:  # solo la última aparición (la del "Comenta ...")
+    hits = [w for w in words if w[0].strip('.,:;!?"“”').lower() == k]
+    if hits: hits[-1][0] = hits[-1][0].replace(hits[-1][0].strip('.,:;!?"“”'), k.upper())
 json.dump(words, open(os.path.join(d, "words.json"), "w"), ensure_ascii=False)
 print(len(words), "palabras,", round(words[-1][1], 1), "s")
