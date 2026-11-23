@@ -21,6 +21,7 @@ const fs = require('fs'), path = require('path');
   if (errors.length) { console.error('Error en la página:', errors); process.exit(1); }
   const dur = await page.evaluate(() => window.DURATION);
   const pops = await page.evaluate(() => window.POPS);
+  const whoosh = await page.evaluate(() => window.WHOOSH || []);
   const N = Math.round(dur * FPS);
 
   const tmp = path.join(dir, '_frames.mp4');
@@ -37,10 +38,12 @@ const fs = require('fs'), path = require('path');
 
   const uniq = [...new Set(pops.map(p => +p.toFixed(2)))];
   const popExpr = uniq.map(p => `0.3*sin(2*PI*(900-500*(t-${p}))*(t-${p}))*exp(-max(0,t-${p})*30)*gt(t,${p})`).join('+') || '0';
+  const whExpr = whoosh.map(w => `0.22*(random(3)*2-1)*exp(-pow((t-${w}+0.05)/0.09,2))`).join('+');
+  const fullExpr = whExpr ? popExpr + '+' + whExpr : popExpr;
   const out = path.join(dir, path.basename(dir) + '.mp4');
   const mix = spawn('ffmpeg', ['-v', 'error', '-y', '-i', tmp, '-i', path.join(dir, 'voz.mp3'),
-    '-f', 'lavfi', '-i', `aevalsrc='${popExpr}':s=44100:d=${dur}`,
-    '-filter_complex', `[1:a]aresample=44100,apad=whole_dur=${dur}[v];[2:a]volume=0.6[p];[v][p]amix=inputs=2:normalize=0,alimiter=limit=0.95[a]`,
+    '-f', 'lavfi', '-i', `aevalsrc='${fullExpr}':s=44100:d=${dur}`,
+    '-filter_complex', `[1:a]aresample=44100,apad=whole_dur=${dur}[v];[2:a]highpass=f=300,volume=0.6[p];[v][p]amix=inputs=2:normalize=0,alimiter=limit=0.95[a]`,
     '-map', '0:v', '-map', '[a]', '-t', String(dur), '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out], { stdio: 'inherit' });
   await new Promise(r => mix.on('close', r));
   fs.unlinkSync(tmp);

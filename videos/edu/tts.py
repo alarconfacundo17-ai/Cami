@@ -14,7 +14,7 @@ key = open(os.environ["ELEVEN_KEY_FILE"]).read().strip()
 req = urllib.request.Request(
     f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE}/with-timestamps?output_format=mp3_44100_128",
     data=json.dumps({"text": text, "model_id": "eleven_multilingual_v2",
-                     "voice_settings": {"stability": 0.45, "similarity_boost": 0.8, "style": 0.25}}).encode(),
+                     "voice_settings": {"stability": 0.45, "similarity_boost": 0.8, "style": 0.25, "speed": float(os.environ.get("ELEVEN_SPEED", "1.0"))}}).encode(),
     headers={"xi-api-key": key, "Content-Type": "application/json"})
 r = json.load(urllib.request.urlopen(req, timeout=120))
 open(os.path.join(d, "voz.mp3"), "wb").write(base64.b64decode(r["audio_base64"]))

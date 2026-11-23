@@ -76,3 +76,20 @@ Portada: "DEJÁ DE CONTESTAR 50 MENSAJES"
 - Instagram: cuenta "Profesional" (creador o empresa) para ver estadísticas y poner botones de contacto.
 - YouTube: subir como Short (vertical, menos de 60 s).
 - Responder todos los comentarios en la primera hora.
+
+## Tanda 2
+
+**6. Sobrino** (`sobrino.mp4`)
+Tu sobrino no tiene la culpa… pero tu web sí 👀 ¿Cuál de las 3 tiene la tuya?
+Comentá WEB y te digo cómo arreglarla.
+#paginaweb #emprendedores #negocios #pymes #marketingdigital
+
+**7. Mapa** (`mapa.mp4`)
+Si tenés local, esto es obligatorio 📍 Y es gratis.
+El error del final lo comete casi todo el mundo. Comentá MAPA y te ayudo a crearlo.
+#googlemaps #negocioslocales #emprendedores #comercio #pymes
+
+**8. Vender** (`vender.mp4`)
+"¿Precio?" … y nunca más te escribió 😩 Probá esto.
+Comentá VENDER y te paso más respuestas así.
+#ventas #whatsapp #emprendedores #atencionalcliente #negocios
