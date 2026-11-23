@@ -4,6 +4,8 @@ Sitios de ejemplo para mostrarle a negocios locales antes de venderles uno.
 
 ## Barbería (`barberia/index.html`)
 
+Versión publicada (sin mapa incrustado, link de WhatsApp en botón): `barberia/publicada.html` → https://claude.ai/artifact/Cp8huG887zKUWcbmS3VvbP
+
 Una sola página con servicios y precios, galería, pedido de turnos por WhatsApp, horarios y mapa.
 
 ### Cómo adaptarlo a un cliente

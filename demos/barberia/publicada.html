@@ -1,0 +1,189 @@
+<title>El Filo Barbería</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap">
+<style>
+  /* Barbería de barrio: noche, cuero y latón. Una sola estética oscura, a propósito. */
+  :root {
+    --bg: #121110;
+    --bg2: #1c1a18;
+    --line: #2d2a26;
+    --text: #f2efe9;
+    --muted: #aaa39a;
+    --accent: #d4a24c;
+    --ok: #25d366;
+    --display: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
+    --body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  a { color: inherit; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  h1, h2 { font-family: var(--display); font-weight: 400; letter-spacing: 1px; text-wrap: balance; margin: 0; }
+  h2 { font-size: 2.6rem; margin-bottom: 24px; }
+  h2 span, h1 span { color: var(--accent); }
+  section .wrap { padding-block: 64px; }
+
+  nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: rgba(18,17,16,.94); border-bottom: 1px solid var(--line); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 11; background: var(--bg); }
+  nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  .logo { font-family: var(--display); font-size: 1.7rem; text-decoration: none; }
+  .logo span { color: var(--accent); }
+  nav ul { display: flex; gap: 20px; list-style: none; margin: 0; padding: 0; }
+  nav ul a { text-decoration: none; color: var(--muted); font-size: .95rem; }
+  nav ul a:hover, nav ul a:focus-visible { color: var(--text); }
+  @media (max-width: 600px) { nav ul { display: none; } }
+
+  .hero { text-align: center; background: radial-gradient(circle at 50% 30%, #2b2316 0%, var(--bg) 70%); margin-top: calc(-1 * env(safe-area-inset-top, 0px)); padding-top: env(safe-area-inset-top, 0px); }
+  .hero .wrap { padding-block: 88px 72px; }
+  .hero h1 { font-size: clamp(3.4rem, 12vw, 6.5rem); line-height: .95; }
+  .hero p { color: var(--muted); font-size: 1.1rem; margin: 18px auto 30px; max-width: 34ch; }
+  .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; background: var(--accent); color: #121110; font-weight: 600; padding: 14px 26px; border-radius: 6px; text-decoration: none; border: 1px solid var(--accent); font-size: 1rem; }
+  .btn.ghost { background: transparent; color: var(--text); border-color: #4a453f; }
+  .btn:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+  .price { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px 4px; border-bottom: 1px solid var(--line); }
+  .price h3 { margin: 0; font-size: 1.05rem; }
+  .price p { margin: 2px 0 0; color: var(--muted); font-size: .92rem; }
+  .price b { color: var(--accent); font-size: 1.25rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  @media (min-width: 640px) { .prices { column-gap: 40px; } }
+
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .gallery div { aspect-ratio: 1; max-width: 100%; border-radius: 6px; display: flex; align-items: flex-end; padding: 10px; font-size: .85rem; color: var(--muted); }
+  .g1 { background: linear-gradient(135deg,#3a2d1a,#1c1a18); } .g2 { background: linear-gradient(135deg,#1c1a18,#2e2c29); } .g3 { background: linear-gradient(135deg,#2a1f12,#3d3020); }
+  @media (max-width: 600px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  .alt { background: var(--bg2); }
+
+  form { display: grid; gap: 14px; max-width: 480px; }
+  label { font-size: .9rem; color: var(--muted); display: grid; gap: 6px; }
+  input, select { background: var(--bg); color: var(--text); border: 1px solid #3a3631; border-radius: 6px; padding: 12px; font: inherit; width: 100%; min-width: 0; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .preview { background: var(--bg); border: 1px dashed #3a3631; border-radius: 6px; padding: 12px 14px; color: var(--muted); font-size: .92rem; }
+  .preview strong { color: var(--text); font-weight: 600; }
+  .wa-btn { background: var(--ok); border-color: var(--ok); color: #0b2a17; text-align: center; }
+  .wa-btn[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+
+  .info { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; }
+  .info h3 { color: var(--accent); margin: 0 0 8px; font-size: .85rem; text-transform: uppercase; letter-spacing: 1.5px; }
+  .info p, .info ul { color: var(--muted); margin: 0; padding: 0; list-style: none; }
+  .hours li { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+
+  footer { text-align: center; color: #6f6962; font-size: .85rem; border-top: 1px solid var(--line); }
+  footer .wrap { padding-block: 26px; }
+</style>
+
+<nav>
+  <div class="wrap">
+    <a href="#top" class="logo">El <span>Filo</span></a>
+    <ul>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#trabajos">Trabajos</a></li>
+      <li><a href="#turnos">Turnos</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <h1>Cortes con <span>oficio</span></h1>
+    <p>Barbería de barrio con más de 10 años. Corte, barba y afeitado a navaja.</p>
+    <div class="btns">
+      <a href="#turnos" class="btn">Sacar turno</a>
+      <a href="#servicios" class="btn ghost">Ver precios</a>
+    </div>
+  </div>
+</header>
+
+<section id="servicios">
+  <div class="wrap">
+    <h2>Servicios <span>&amp;</span> precios</h2>
+    <div class="prices">
+      <div class="price"><div><h3>Corte clásico</h3><p>Tijera y máquina, lavado incluido</p></div><b>$12.000</b></div>
+      <div class="price"><div><h3>Corte + barba</h3><p>Perfilado con navaja</p></div><b>$18.000</b></div>
+      <div class="price"><div><h3>Afeitado clásico</h3><p>Toalla caliente y navaja</p></div><b>$10.000</b></div>
+      <div class="price"><div><h3>Corte infantil</h3><p>Hasta 12 años</p></div><b>$9.000</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="trabajos" class="alt">
+  <div class="wrap">
+    <h2>Nuestros <span>trabajos</span></h2>
+    <div class="gallery">
+      <div class="g1">Fade</div><div class="g2">Barba</div><div class="g3">Clásico</div>
+      <div class="g2">Texturizado</div><div class="g3">Navaja</div><div class="g1">Diseño</div>
+    </div>
+  </div>
+</section>
+
+<section id="turnos">
+  <div class="wrap">
+    <h2>Sacá tu <span>turno</span></h2>
+    <p style="color:var(--muted); margin:0 0 22px">Elegí servicio, día y hora. El pedido te llega directo a nuestro WhatsApp.</p>
+    <form id="turno" onsubmit="return false">
+      <label for="nombre">Tu nombre <input id="nombre" name="nombre" placeholder="Juan" value="Juan" autocomplete="given-name"></label>
+      <label for="servicio">Servicio
+        <select id="servicio" name="servicio">
+          <option>Corte clásico</option><option selected>Corte + barba</option>
+          <option>Afeitado clásico</option><option>Corte infantil</option>
+        </select>
+      </label>
+      <div class="row">
+        <label for="dia">Día <input id="dia" type="date" name="dia"></label>
+        <label for="hora">Hora <input id="hora" type="time" name="hora" min="10:00" max="20:00" value="11:00"></label>
+      </div>
+      <div class="preview" id="preview" aria-live="polite"></div>
+      <a class="btn wa-btn" id="wa" href="#" target="_blank" rel="noopener">Pedir turno por WhatsApp</a>
+    </form>
+  </div>
+</section>
+
+<section id="contacto" class="alt">
+  <div class="wrap info">
+    <div>
+      <h3>Dónde estamos</h3>
+      <p>Av. Siempre Viva 742, Buenos Aires</p>
+      <p style="margin-top:10px"><a href="https://www.google.com/maps/search/?api=1&query=Obelisco+Buenos+Aires" target="_blank" rel="noopener">Ver en Google Maps →</a></p>
+    </div>
+    <div>
+      <h3>Horarios</h3>
+      <ul class="hours"><li><span>Mar a Vie</span><span>10 a 20 h</span></li><li><span>Sábados</span><span>10 a 18 h</span></li><li><span>Dom y Lun</span><span>Cerrado</span></li></ul>
+    </div>
+    <div>
+      <h3>Seguinos</h3>
+      <p>@elfilobarberia</p>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">© El Filo Barbería · Sitio de demostración</div></footer>
+
+<script>
+  // Número de WhatsApp del negocio: código de país + área + número, sin espacios ni "+".
+  const WHATSAPP = "5491100000000";
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2, "0");
+  const today = new Date();
+  const next = new Date(today); next.setDate(today.getDate() + 1);
+  const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  $("dia").min = iso(today);
+  if (!$("dia").value) $("dia").value = iso(next);
+
+  function update() {
+    const nombre = $("nombre").value.trim(), dia = $("dia").value, hora = $("hora").value;
+    const ok = nombre && dia && hora;
+    let fecha = "";
+    if (dia) fecha = new Date(dia + "T00:00").toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
+    const msg = `Hola! Soy ${nombre || "…"}. Quiero un turno para ${$("servicio").value} el ${fecha || "…"} a las ${hora || "…"}. ¿Hay lugar?`;
+    $("preview").innerHTML = `<strong>Mensaje que se envía:</strong><br>${msg.replace(/</g, "&lt;")}`;
+    $("wa").href = ok ? "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg) : "#";
+    $("wa").setAttribute("aria-disabled", ok ? "false" : "true");
+  }
+  ["nombre", "servicio", "dia", "hora"].forEach(id => $(id).addEventListener("input", update));
+  update();
+</script>
