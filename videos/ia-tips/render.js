@@ -25,7 +25,7 @@ const path = require('path');
 
   // sonido: voz + "pops" suaves en cada aparición + whoosh en cambios de escena
   const pops = (popsArg || '').split(',').filter(Boolean).map(Number);
-  const popExpr = pops.map(p => `0.35*sin(2*PI*(900-500*(t-${p}))*(t-${p}))*exp(-(t-${p})*30)*gt(t,${p})`).join('+') || '0';
+  const popExpr = pops.map(p => `0.35*sin(2*PI*(900-500*(t-${p}))*(t-${p}))*exp(-max(0,t-${p})*30)*gt(t,${p})`).join('+') || '0';
   const mix = spawn('ffmpeg', ['-v', 'error', '-y', '-i', '_frames.mp4', '-i', voice,
     '-f', 'lavfi', '-i', `aevalsrc='${popExpr}':s=44100:d=${dur}`,
     '-filter_complex', `[1:a]aresample=44100,apad=whole_dur=${dur}[v];[2:a]volume=0.6[p];[v][p]amix=inputs=2:normalize=0,alimiter=limit=0.95[a]`,

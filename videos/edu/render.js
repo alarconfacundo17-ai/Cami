@@ -36,7 +36,7 @@ const fs = require('fs'), path = require('path');
   await browser.close();
 
   const uniq = [...new Set(pops.map(p => +p.toFixed(2)))];
-  const popExpr = uniq.map(p => `0.3*sin(2*PI*(900-500*(t-${p}))*(t-${p}))*exp(-(t-${p})*30)*gt(t,${p})`).join('+') || '0';
+  const popExpr = uniq.map(p => `0.3*sin(2*PI*(900-500*(t-${p}))*(t-${p}))*exp(-max(0,t-${p})*30)*gt(t,${p})`).join('+') || '0';
   const out = path.join(dir, path.basename(dir) + '.mp4');
   const mix = spawn('ffmpeg', ['-v', 'error', '-y', '-i', tmp, '-i', path.join(dir, 'voz.mp3'),
     '-f', 'lavfi', '-i', `aevalsrc='${popExpr}':s=44100:d=${dur}`,
