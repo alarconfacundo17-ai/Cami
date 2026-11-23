@@ -2,3 +2,5 @@
 *.mp3
 *.mp4
 *.wav
+edu/*/index.html
+edu/*/words.js
