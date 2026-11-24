@@ -65,8 +65,8 @@ const anim=[]; window.POPS=[]; window.WHOOSH=[];
 function el(html, parent){ const d=document.createElement('div'); d.innerHTML=html.trim(); const e=d.firstChild; parent.appendChild(e); return e; }
 function pop(e,a,d=0.3,sound=false){ anim.push(t=>{const k=eo(t,a,d); e.style.opacity=k; e.style.transform=`translateY(${(1-k)*50}px)`;}); if(sound) POPS.push(a); }
 function popScale(e,a,sound=true){ anim.push(t=>{e.style.opacity=clamp((t-a)/0.15); e.style.transform=`scale(${Math.max(0,back(t,a))})`;}); if(sound) POPS.push(a); }
-function words(range, green, parent, cls){ const [a,b]=range; const box=el(`<div class="${cls}"></div>`, parent);
-  for(let i=a;i<=b;i++){ const txt=W[i][0]; const g=green.some(x=>norm(x)===norm(txt)); const s=el(`<span class="w ${g?'green':''}">${txt}</span>`, box); box.append(' '); pop(s,W[i][1],0.25);
+function words(range, green, parent, cls, instant){ const [a,b]=range; const box=el(`<div class="${cls}"></div>`, parent);
+  for(let i=a;i<=b;i++){ const txt=W[i][0]; const g=green.some(x=>norm(x)===norm(txt)); const s=el(`<span class="w ${g?'green':''}">${txt}</span>`, box); box.append(' '); pop(s, instant ? -1 : W[i][1], 0.25);
     if(g){ const t0=W[i][1]; anim.push(t=>{ const x=(t-t0)/0.35; if(x>0&&x<1) s.style.transform=`scale(${1+0.18*Math.sin(Math.PI*x)})`; }); } } return box; }
 function card(c, top, parent){
   const box=el(`<div class="abs card" style="left:110px; top:${top}px; width:860px; padding:${c.kind==='chat'?0:26}px 0"></div>`, parent);
@@ -84,11 +84,11 @@ function build(D){
   sc.forEach((s,k)=>{
     const a=s.from, b=k+1<sc.length? sc[k+1].from-0.05 : 999;
     const S=el('<div class="scene"></div>', root);
-    anim.push(t=>{const v=Math.min(eo(t,a,0.25),1-clamp((t-b)/0.2)); S.style.opacity=v; S.style.transform=`translateX(${(1-eo(t,a,0.3))*120-clamp((t-b)/0.2)*120}px)`;});
+    anim.push(t=>{const inn = a<=0 ? 1 : eo(t,a,0.25); const v=Math.min(inn,1-clamp((t-b)/0.2)); S.style.opacity=v; S.style.transform=`translateX(${(a<=0?0:(1-eo(t,a,0.3))*120)-clamp((t-b)/0.2)*120}px)`;});
     if(a>0) WHOOSH.push(a);
     if(s.type==='hook'){
-      words(s.range, s.green||[], el('<div class="abs" style="left:60px; top:230px; width:960px"></div>',S), 'big');
-      if(s.icon){ const ic=el(`<div class="abs" style="left:${540-150*(s.iconScale||1.4)}px; top:${s.iconTop||1000}px; transform-origin:center"></div>`,S); ic.innerHTML=ICONS[s.icon]; ic.firstChild.setAttribute('width',300*(s.iconScale||1.4)); ic.firstChild.setAttribute('height',300*(s.iconScale||1.4)); popScale(ic,s.iconAt);
+      words(s.range, s.green||[], el('<div class="abs" style="left:60px; top:230px; width:960px"></div>',S), 'big', true);
+      if(s.icon){ const ic=el(`<div class="abs" style="left:${540-150*(s.iconScale||1.4)}px; top:${s.iconTop||1000}px; transform-origin:center"></div>`,S); ic.innerHTML=ICONS[s.icon]; ic.firstChild.setAttribute('width',300*(s.iconScale||1.4)); ic.firstChild.setAttribute('height',300*(s.iconScale||1.4)); popScale(ic,-1,false);
         if(s.strikeAt){ const sv=el(`<svg class="abs" style="left:${540-230}px; top:${(s.iconTop||1000)-20}px" width="460" height="460"><line x1="30" y1="430" x2="430" y2="30" stroke="#D2503F" stroke-width="34" stroke-linecap="round" stroke-dasharray="570" stroke-dashoffset="570"/></svg>`,S); const ln=sv.firstChild; anim.push(t=>ln.setAttribute('stroke-dashoffset',570*(1-eo(t,s.strikeAt,0.3)))); POPS.push(s.strikeAt); } }
     }
     if(s.type==='big'){

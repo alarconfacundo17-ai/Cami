@@ -7,7 +7,8 @@ const fs = require('fs'), path = require('path');
 
 (async () => {
   const dir = path.resolve(process.argv[2]);
-  const words = JSON.parse(fs.readFileSync(path.join(dir, 'words.json'), 'utf8'));
+  const SPEED = parseFloat(process.env.SPEED || '1');
+  const words = JSON.parse(fs.readFileSync(path.join(dir, 'words.json'), 'utf8')).map(([w, t]) => [w, t / SPEED]);
   fs.writeFileSync(path.join(dir, 'words.js'), 'window.WORDS=' + JSON.stringify(words) + ';');
   fs.copyFileSync(path.join(__dirname, process.env.TEMPLATE || 'template.html'), path.join(dir, 'index.html'));
 
@@ -43,7 +44,7 @@ const fs = require('fs'), path = require('path');
   const out = path.join(dir, path.basename(dir) + '.mp4');
   const mix = spawn('ffmpeg', ['-v', 'error', '-y', '-i', tmp, '-i', path.join(dir, 'voz.mp3'),
     '-f', 'lavfi', '-i', `aevalsrc='${fullExpr}':s=44100:d=${dur}`,
-    '-filter_complex', `[1:a]aresample=44100,apad=whole_dur=${dur}[v];[2:a]highpass=f=300,volume=0.6[p];[v][p]amix=inputs=2:normalize=0,alimiter=limit=0.95[a]`,
+    '-filter_complex', `[1:a]atempo=${SPEED},aresample=44100,apad=whole_dur=${dur}[v];[2:a]highpass=f=300,volume=0.6[p];[v][p]amix=inputs=2:normalize=0,alimiter=limit=0.95[a]`,
     '-map', '0:v', '-map', '[a]', '-t', String(dur), '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out], { stdio: 'inherit' });
   await new Promise(r => mix.on('close', r));
   fs.unlinkSync(tmp);
