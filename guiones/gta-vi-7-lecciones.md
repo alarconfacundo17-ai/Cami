@@ -21,7 +21,7 @@ Pero no fue solo porque el juego sea bueno. Detrás hay una estrategia de ventas
 
 [Lista de 7 casilleros vacíos, con el 5 resaltado]
 
-En este video te muestro las siete lecciones. Y quédate hasta la lección cinco: es la que más plata le hizo ganar a Rockstar, y la puedes aplicar hoy mismo.
+En este video te muestro las siete lecciones, y en cada una te digo exactamente qué hacer hoy en tu negocio. Y quédate hasta la lección cinco: es la que más plata le hizo ganar a Rockstar, y la puedes aplicar hoy mismo.
 
 ## 0:45 — Lección 1: La espera vende
 
@@ -37,6 +37,10 @@ GTA V salió en 2013. Pasaron trece años hasta GTA VI. Y durante todo ese tiemp
 
 Una panadería que avisa "el viernes sale la torta nueva" vende más el viernes que una que la pone en la vidriera sin decir nada.
 
+[Tarjeta "CÓMO APLICARLO HOY" con una checklist que se va tildando]
+
+Cómo aplicarlo hoy: elige lo próximo que vas a lanzar, aunque sea algo chico. Un sabor nuevo, un horario nuevo, un servicio nuevo. Publica hoy una historia con una pista, sin mostrarlo del todo. Mañana, otra pista. Y el día del lanzamiento, lo muestras completo. En una semana pasaste de "nadie sabía" a "un montón de gente esperándolo".
+
 ## 1:45 — Lección 2: Pocos adelantos, pero muy buenos
 
 [Dos tarjetas grandes: "TRÁILER 1 · 90 millones de vistas en 24 h" · "TRÁILER 2 · más de 465 millones en 24 h"]
@@ -46,6 +50,10 @@ En dos años y medio, Rockstar mostró solo dos tráileres. Nada más. El primer
 [Comparación: un perfil con 30 publicaciones grises e iguales vs. uno con 3 publicaciones muy cuidadas, con muchos corazones]
 
 La lección: no necesitas publicar todos los días cualquier cosa. Es mejor mostrar poco, pero que sea muy bueno. Una foto bien hecha de tu producto estrella vale más que veinte fotos apuradas.
+
+[Checklist "CÓMO APLICARLO HOY"]
+
+Cómo aplicarlo hoy: elige tu producto o servicio que más vende y hazle una sola foto o un solo video muy bien hecho. Buena luz, fondo limpio y que se vea bien de cerca. Ese va a ser tu "tráiler". Fíjalo arriba de todo en tu perfil, y úsalo cada vez que alguien te pregunte qué vendes.
 
 ## 2:45 — Lección 3: Una fecha marcada
 
@@ -57,6 +65,10 @@ GTA VI tuvo una fecha. Y esa fecha hizo que millones de personas se organizaran 
 
 En tu negocio pasa lo mismo: si una promoción no tiene fecha de fin, la gente la deja para después… y después se olvida. Ponle fecha a todo: "hasta el domingo", "solo esta semana", "las primeras veinte personas". Una fecha convierte el "después" en "ahora".
 
+[Checklist "CÓMO APLICARLO HOY"]
+
+Cómo aplicarlo hoy: revisa las promociones que tienes publicadas. Si alguna no tiene fecha de fin, agrégasela. Y si nunca hiciste una, prueba esta: "Esta semana, el segundo producto a mitad de precio, solo hasta el domingo a las ocho de la noche". La hora exacta hace que suene real, y lo es.
+
 ## 3:45 — Lección 4: Cobra antes de lanzar
 
 [Pantalla: "PREVENTA ABIERTA · 25 de junio de 2026". Contador de reservas que sube]
@@ -66,6 +78,10 @@ En junio, cinco meses antes del lanzamiento, abrieron la preventa. Y lo curioso:
 [Ejemplo: mensaje de WhatsApp "Reservá tu cupo para el taller del 10/12: seña $5.000"]
 
 ¿Por qué es tan buena idea? Porque cobrar antes te da dos cosas: plata para producir y la confirmación de que la gente lo quiere. Si vas a dar un taller, sacar una colección o abrir turnos para diciembre, abre la reserva con seña. Si se llena, ya sabes que funciona.
+
+[Checklist "CÓMO APLICARLO HOY"]
+
+Cómo aplicarlo hoy: piensa qué podrías vender por adelantado. Turnos para las fiestas, pedidos de fin de año, una tanda limitada de algo. Publica: "Abrimos reservas. Se confirma con una seña. Hay lugar para veinte". Si se llena, ya tienes la plata y la demanda asegurada. Y si no se llena, aprendiste algo sin perder nada.
 
 ## 4:45 — Lección 5: Ofrece siempre una opción cara
 
@@ -81,6 +97,10 @@ Esta es la lección que más plata le hizo ganar. GTA VI tenía dos versiones: l
 
 Haz la prueba esta semana. Es el cambio más rápido para vender más sin conseguir clientes nuevos.
 
+[Checklist "CÓMO APLICARLO HOY"]
+
+Cómo aplicarlo hoy: toma tu servicio o producto principal y arma la versión premium. ¿Qué le podrías agregar? Un extra, un envío más rápido, una presentación más linda, una garantía. Ponle un precio más alto y ofrécelas juntas. No tienes que convencer a nadie: solo dar la opción.
+
 ## 6:00 — Lección 6: Que tus clientes hablen por ti
 
 [Lluvia de clips, streams y comentarios alrededor de un logo genérico de control de videojuegos]
@@ -91,6 +111,10 @@ Desde que salió, internet está lleno de clips, transmisiones y videos de GTA V
 
 Tu negocio también puede tener eso, en chiquito. Pídele una reseña a cada cliente contento. Comparte las historias donde te etiquetan. Ofrece un pequeño descuento al que suba una foto. Lo que dice un cliente convence mucho más que lo que dices tú.
 
+[Checklist "CÓMO APLICARLO HOY"]
+
+Cómo aplicarlo hoy: a cada cliente que se va contento, mándale un mensaje esa misma tarde: "¡Gracias por venir! Si te gustó, ¿nos dejarías una reseña? Te dejo el link". Con cinco reseñas nuevas por semana, en un mes cambia por completo cómo te ven los que te buscan en Google.
+
 ## 7:00 — Lección 7: Mejor tarde que mal
 
 [Calendario con fechas tachadas: "2025" → "mayo 2026" → "19 nov 2026"]
@@ -100,6 +124,10 @@ GTA VI se retrasó más de una vez. Y aun así hizo historia. Porque cuando sali
 [Dos locales: uno abrió apurado con un cartel "PERDÓN, ESTAMOS ACOMODANDO" y reseñas de 2 estrellas; el otro abrió una semana después con todo listo y reseñas de 5]
 
 Si tienes que elegir entre lanzar algo apurado o una semana tarde pero bien hecho, elige lo segundo. Una mala primera impresión cuesta mucho más que unos días de espera.
+
+[Checklist "CÓMO APLICARLO HOY"]
+
+Cómo aplicarlo hoy: antes de lanzar cualquier cosa, haz una prueba chica. Prueba el producto con tres clientes de confianza, pregúntales qué mejorarías, y recién después lánzalo a todos. Es la forma más barata de evitar una mala primera impresión.
 
 ## 8:00 — Resumen y cierre
 
