@@ -13,6 +13,8 @@ export default function PlaceholderPhoto({
   image,
   alt = "",
   objectPosition = "center",
+  loading = "lazy",
+  fetchPriority = "auto",
   className = "",
   children,
 }) {
@@ -28,6 +30,9 @@ export default function PlaceholderPhoto({
         <img
           src={image}
           alt={alt}
+          loading={loading}
+          fetchPriority={fetchPriority}
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
           style={{ objectPosition }}
         />

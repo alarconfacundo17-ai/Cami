@@ -40,6 +40,8 @@ export default function Hero() {
             tone="stone"
             image={profile.heroImage}
             alt={profile.name}
+            loading="eager"
+            fetchPriority="high"
             objectPosition="center 15%"
             className="aspect-[4/5] w-full rounded-sm lg:aspect-auto lg:h-[480px]"
           >

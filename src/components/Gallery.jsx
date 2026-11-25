@@ -59,7 +59,7 @@ export default function Gallery() {
                     poster={item.poster_url}
                     muted
                     playsInline
-                    preload="metadata"
+                    preload="none"
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/25">
@@ -72,6 +72,8 @@ export default function Gallery() {
                 <img
                   src={item.url}
                   alt={item.caption ?? ""}
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               )}
