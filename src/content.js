@@ -6,8 +6,6 @@
 
 import heroPhoto from "./assets/photos/hero.webp";
 import contentCollabPhoto from "./assets/photos/content-collab.webp";
-import lifestylePhoto from "./assets/photos/lifestyle.webp";
-import travelLakePhoto from "./assets/photos/travel-lake.webp";
 
 export const profile = {
   name: "Camila Zanon",
@@ -30,15 +28,6 @@ export const aboutHighlights = [
   { icon: "apple", label: "Bienestar & Nutrición" },
   { icon: "camera", label: "Lifestyle & Vlogs" },
   { icon: "star", label: "Experiencias & Marcas" },
-];
-
-// Las fotos sin "image" siguen siendo placeholders — reemplazar por la ruta
-// real cuando tengamos más material de Camila para esas categorías.
-export const contentGrid = [
-  { label: "Deporte", image: null },
-  { label: "Gastronomía saludable", image: null },
-  { label: "Lifestyle", image: lifestylePhoto },
-  { label: "Experiencias & aventuras", image: travelLakePhoto, objectPosition: "center 25%" },
 ];
 
 // Foto grande de la sección "Tipos de contenido / Colaboraciones".

@@ -16,6 +16,7 @@ export default function PlaceholderPhoto({
   loading = "lazy",
   fetchPriority = "auto",
   className = "",
+  imageClassName = "",
   children,
 }) {
   const gradient = TONES[tone] ?? TONES.warm;
@@ -33,7 +34,7 @@ export default function PlaceholderPhoto({
           loading={loading}
           fetchPriority={fetchPriority}
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
           style={{ objectPosition }}
         />
       ) : (

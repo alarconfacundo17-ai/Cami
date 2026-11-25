@@ -8,7 +8,6 @@ import * as staticContent from "../content.js";
 export const defaultContent = {
   profile: staticContent.profile,
   aboutHighlights: staticContent.aboutHighlights,
-  contentGrid: staticContent.contentGrid,
   contentCollabImage: staticContent.contentCollabImage,
   stats: staticContent.stats,
   contentTypes: staticContent.contentTypes,

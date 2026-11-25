@@ -3,7 +3,6 @@ import Hero from "./components/Hero";
 import About from "./components/About";
 import Community from "./components/Community";
 import ContentCollab from "./components/ContentCollab";
-import Gallery from "./components/Gallery";
 import Footer from "./components/Footer";
 
 export default function PublicSite() {
@@ -14,7 +13,6 @@ export default function PublicSite() {
       <About />
       <Community />
       <ContentCollab />
-      <Gallery />
       <Footer />
     </div>
   );

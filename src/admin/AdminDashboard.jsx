@@ -179,26 +179,6 @@ export default function AdminDashboard() {
           </div>
         </Section>
 
-        <Section title="Grid de contenido (4 fotos)">
-          {form.contentGrid.map((item, i) => (
-            <div key={i} className="flex flex-col gap-2 border-b border-ink/10 pb-5 last:border-0 last:pb-0">
-              <Field label={`Etiqueta ${i + 1}`}>
-                <input
-                  className={inputClass}
-                  value={item.label}
-                  onChange={(e) => setArrayItem("contentGrid", i, { label: e.target.value })}
-                />
-              </Field>
-              <ImageField
-                label="Foto"
-                value={item.image}
-                path={`site/grid-${i}`}
-                onChange={(image) => setArrayItem("contentGrid", i, { image })}
-              />
-            </div>
-          ))}
-        </Section>
-
         <Section title="Foto grande (sección Tipos de contenido)">
           <ImageField
             label="Foto"
@@ -283,6 +263,11 @@ export default function AdminDashboard() {
         </Section>
 
         <section className="rounded-md bg-white/60 p-6">
+          <p className="mb-4 text-sm font-light text-ink/70">
+            Acá se manejan las carpetas de fotos y videos que se ven en la
+            sección "Sobre mí" del sitio (Deporte, Lifestyle, etc.). Cada
+            carpeta nueva que escribas abajo aparece sola como un cuadro más.
+          </p>
           <GalleryManager />
         </section>
       </div>

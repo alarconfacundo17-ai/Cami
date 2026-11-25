@@ -4,8 +4,10 @@ import { supabase } from "../lib/supabaseClient";
 import { uploadGalleryFile, uploadGalleryVideo } from "./storage";
 import { useSiteContent } from "../siteContent/SiteContentContext";
 
+const SUGGESTED_CATEGORIES = ["Deporte", "Lifestyle", "Gastronomía", "Experiencias"];
+
 export default function GalleryManager() {
-  const { content, gallery, refresh } = useSiteContent();
+  const { gallery, refresh } = useSiteContent();
   const [category, setCategory] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -13,10 +15,9 @@ export default function GalleryManager() {
   const [editingValue, setEditingValue] = useState("");
 
   const categoryOptions = useMemo(() => {
-    const fromGrid = content.contentGrid.map((g) => g.label);
     const fromGallery = gallery.map((g) => g.category).filter(Boolean);
-    return [...new Set([...fromGrid, ...fromGallery])];
-  }, [content.contentGrid, gallery]);
+    return [...new Set([...SUGGESTED_CATEGORIES, ...fromGallery])];
+  }, [gallery]);
 
   const handleAdd = async (e) => {
     const file = e.target.files?.[0];

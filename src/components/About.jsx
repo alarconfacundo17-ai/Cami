@@ -1,13 +1,69 @@
 import { Dumbbell, Apple, Camera, Star } from "lucide-react";
+import { useMemo, useState } from "react";
 import PlaceholderPhoto from "./PlaceholderPhoto";
+import AlbumView from "./AlbumView";
 import { useSiteContent } from "../siteContent/SiteContentContext";
 
 const ICONS = { dumbbell: Dumbbell, apple: Apple, camera: Camera, star: Star };
 const TONES = ["cool", "sunset", "stone", "warm"];
 
+function FolderTile({ folder, tone, onOpen }) {
+  const cover = folder.items[0];
+  const coverImage = cover && (cover.media_type === "video" ? cover.poster_url : cover.url);
+  const hasStack = folder.items.length > 1;
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group relative block aspect-[3/4] w-full text-left"
+    >
+      {hasStack && (
+        <>
+          <div className="absolute inset-0 -rotate-6 scale-[0.93] overflow-hidden rounded-sm bg-ink/30 transition-transform duration-300 ease-out group-hover:-rotate-9">
+            {coverImage && (
+              <img src={coverImage} alt="" className="h-full w-full object-cover opacity-50" />
+            )}
+          </div>
+          <div className="absolute inset-0 rotate-3 scale-[0.96] overflow-hidden rounded-sm bg-ink/20 transition-transform duration-300 ease-out group-hover:rotate-6">
+            {coverImage && (
+              <img src={coverImage} alt="" className="h-full w-full object-cover opacity-70" />
+            )}
+          </div>
+        </>
+      )}
+
+      <PlaceholderPhoto
+        tone={tone}
+        label={folder.label}
+        image={coverImage}
+        alt={folder.label}
+        imageClassName="transition-transform duration-500 ease-out group-hover:scale-105"
+        className="relative aspect-[3/4] rounded-sm shadow-md transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-xl group-active:translate-y-0 group-active:scale-[0.97]"
+      >
+        <span className="absolute left-3 top-3 rounded-full bg-black/50 px-2 py-0.5 text-[11px] text-white">
+          {folder.items.length}
+        </span>
+      </PlaceholderPhoto>
+    </button>
+  );
+}
+
 export default function About() {
-  const { content } = useSiteContent();
-  const { profile, aboutHighlights, contentGrid } = content;
+  const { content, gallery } = useSiteContent();
+  const { profile, aboutHighlights } = content;
+  const [openFolder, setOpenFolder] = useState(null);
+
+  const folders = useMemo(() => {
+    const map = new Map();
+    for (const item of gallery) {
+      const key = item.category || "Otros";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(item);
+    }
+    return [...map.entries()].map(([label, items]) => ({ label, items }));
+  }, [gallery]);
+
   return (
     <section id="sobre-mi" className="bg-cream py-20 lg:py-24">
       <div className="mx-auto flex max-w-7xl flex-col gap-12 px-6 lg:flex-row lg:items-start lg:gap-10 lg:px-10">
@@ -44,20 +100,25 @@ export default function About() {
           </ul>
         </div>
 
-        <div id="contenido" className="grid flex-1 scroll-mt-24 grid-cols-2 gap-4 lg:grid-cols-4">
-          {contentGrid.map((item, i) => (
-            <PlaceholderPhoto
-              key={item.label}
+        <div id="contenido" className="grid flex-1 scroll-mt-24 grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4">
+          {folders.map((folder, i) => (
+            <FolderTile
+              key={folder.label}
+              folder={folder}
               tone={TONES[i % TONES.length]}
-              label={item.label}
-              image={item.image}
-              alt={item.label}
-              objectPosition={item.objectPosition ?? "center"}
-              className="aspect-[3/4] rounded-sm"
+              onOpen={() => setOpenFolder(folder)}
             />
           ))}
         </div>
       </div>
+
+      {openFolder && (
+        <AlbumView
+          category={openFolder.label}
+          items={openFolder.items}
+          onClose={() => setOpenFolder(null)}
+        />
+      )}
     </section>
   );
 }
