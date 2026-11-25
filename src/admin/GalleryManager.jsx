@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ImagePlus, Trash2, Video } from "lucide-react";
+import { ImagePlus, Play, Trash2 } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
-import { uploadGalleryFile } from "./storage";
+import { uploadGalleryFile, uploadGalleryVideo } from "./storage";
 import { useSiteContent } from "../siteContent/SiteContentContext";
 
 export default function GalleryManager() {
@@ -15,14 +15,21 @@ export default function GalleryManager() {
     setError("");
     setUploading(true);
     try {
-      const mediaType = file.type.startsWith("video") ? "video" : "image";
-      const url = await uploadGalleryFile(file);
+      const isVideo = file.type.startsWith("video");
       const position = gallery.length
         ? Math.max(...gallery.map((g) => g.position)) + 1
         : 0;
-      const { error: insertError } = await supabase
-        .from("gallery_items")
-        .insert({ media_type: mediaType, url, position });
+
+      let row;
+      if (isVideo) {
+        const { url, posterUrl } = await uploadGalleryVideo(file);
+        row = { media_type: "video", url, poster_url: posterUrl, position };
+      } else {
+        const { url } = await uploadGalleryFile(file);
+        row = { media_type: "image", url, position };
+      }
+
+      const { error: insertError } = await supabase.from("gallery_items").insert(row);
       if (insertError) throw insertError;
       await refresh();
     } catch (err) {
@@ -48,9 +55,21 @@ export default function GalleryManager() {
         {gallery.map((item) => (
           <div key={item.id} className="group relative aspect-[3/4] overflow-hidden rounded bg-ink/10">
             {item.media_type === "video" ? (
-              <div className="flex h-full w-full items-center justify-center text-ink/40">
-                <Video size={24} />
-              </div>
+              <>
+                <video
+                  src={item.url}
+                  poster={item.poster_url}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink">
+                    <Play size={14} fill="currentColor" className="ml-0.5" />
+                  </span>
+                </div>
+              </>
             ) : (
               <img src={item.url} alt="" className="h-full w-full object-cover" />
             )}

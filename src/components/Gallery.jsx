@@ -1,7 +1,11 @@
+import { useState } from "react";
+import { Play } from "lucide-react";
 import { useSiteContent } from "../siteContent/SiteContentContext";
+import Lightbox from "./Lightbox";
 
 export default function Gallery() {
   const { gallery } = useSiteContent();
+  const [active, setActive] = useState(null);
 
   if (!gallery || gallery.length === 0) return null;
 
@@ -14,29 +18,41 @@ export default function Gallery() {
 
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {gallery.map((item) => (
-            <div
+            <button
               key={item.id}
-              className="aspect-[3/4] overflow-hidden rounded-sm bg-ink"
+              type="button"
+              onClick={() => setActive(item)}
+              className="group relative aspect-[3/4] overflow-hidden rounded-sm bg-ink"
             >
               {item.media_type === "video" ? (
-                <video
-                  src={item.url}
-                  className="h-full w-full object-cover"
-                  controls
-                  playsInline
-                  preload="metadata"
-                />
+                <>
+                  <video
+                    src={item.url}
+                    poster={item.poster_url}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/25">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-ink shadow-lg">
+                      <Play size={20} fill="currentColor" className="ml-0.5" />
+                    </span>
+                  </div>
+                </>
               ) : (
                 <img
                   src={item.url}
                   alt={item.caption ?? ""}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               )}
-            </div>
+            </button>
           ))}
         </div>
       </div>
+
+      <Lightbox item={active} onClose={() => setActive(null)} />
     </section>
   );
 }

@@ -39,6 +39,7 @@ create table if not exists gallery_items (
   id uuid primary key default gen_random_uuid(),
   media_type text not null check (media_type in ('image', 'video')),
   url text not null,
+  poster_url text,
   caption text,
   position int not null default 0,
   created_at timestamptz not null default now()
