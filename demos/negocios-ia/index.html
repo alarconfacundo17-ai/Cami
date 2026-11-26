@@ -1,0 +1,155 @@
+<title>Negocios + IA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: una sola columna tipo "link de la bio", bandas oscuras con una banda hueso para los precios */
+:root{
+  --ink:#0E1A15; --ink2:#15261E; --line:#24392F;
+  --green:#3DDC84; --brand:#1E7B55; --bone:#F2F0E9; --coral:#FF5A3C; --mute:#9DB3A8;
+  --display:"Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid var(--green);outline-offset:3px;border-radius:8px}
+.lab{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
+h2{font-size:30px;line-height:1.1;font-weight:800}
+
+.hero{margin-top:calc(-1 * env(safe-area-inset-top, 0px));padding-top:calc(env(safe-area-inset-top, 0px) + 28px);padding-bottom:40px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:36px}
+.logo{width:46px;height:46px;border-radius:50%;background:#000;display:grid;place-items:center;flex:none;border:2px solid var(--line)}
+.top b{font-family:var(--display);font-size:20px;font-weight:800}
+.top span{display:block;font-family:var(--mono);font-size:12px;color:var(--mute)}
+h1{font-size:clamp(40px,11vw,64px);line-height:.98;font-weight:800;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--green)}
+.sub{color:var(--mute);font-size:19px;margin:18px 0 26px;max-width:32ch}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--green);color:var(--ink);text-decoration:none;font-weight:700;font-size:18px;padding:17px 22px;border-radius:14px;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--bone);border:2px solid var(--line)}
+.row{display:grid;gap:10px}
+.num{margin-top:14px;font-family:var(--mono);font-size:13px;color:var(--mute);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.num code{color:var(--bone);user-select:all}
+.num button{font:inherit;color:var(--green);background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer}
+
+.prices{background:var(--bone);color:var(--ink);padding-block:44px;border-radius:28px 28px 0 0}
+.prices .lab{color:var(--brand)}
+.prices h2{margin:8px 0 22px}
+.svc{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:18px 0;border-top:1.5px solid #D9D5C8}
+.svc:last-of-type{border-bottom:1.5px solid #D9D5C8}
+.svc h3{margin:0;font-size:19px;font-weight:700;min-width:0}
+.svc p{margin:0;grid-column:1;color:#4A5A52;font-size:15px}
+.svc .p{grid-column:2;grid-row:1 / span 2;text-align:right;font-family:var(--display);font-weight:800;font-size:26px;line-height:1;color:var(--brand);font-variant-numeric:tabular-nums}
+.svc .p small{display:block;font-family:var(--mono);font-size:11px;font-weight:500;color:#6B7A72;letter-spacing:.05em;margin-top:6px}
+.tag{display:inline-block;margin-left:6px;vertical-align:2px;background:var(--coral);color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 7px;border-radius:6px}
+.note{font-size:14px;color:#5C6B63;margin:16px 0 0}
+
+.demo{background:var(--brand);padding-block:40px}
+.demo h2{color:#fff;margin:8px 0 10px}
+.demo .lab{color:#BFF5D5}
+.demo p{margin:0 0 20px;color:#DDF3E6}
+.demo .btn{background:var(--ink);color:var(--bone)}
+
+.steps{padding-block:44px}
+.steps h2{margin:8px 0 22px}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:s}
+ol li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start}
+ol li::before{content:counter(s);width:44px;height:44px;border-radius:12px;background:var(--ink2);border:2px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--green)}
+ol b{display:block;font-size:18px}
+ol span{color:var(--mute);font-size:15px}
+
+.faq{padding-block:8px 44px}
+.faq h2{margin:8px 0 14px}
+details{border-top:1.5px solid var(--line);padding:16px 0}
+details:last-child{border-bottom:1.5px solid var(--line)}
+summary{cursor:pointer;font-weight:700;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";font-family:var(--mono);color:var(--green);font-size:20px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:10px 0 0;color:var(--mute);font-size:15px}
+
+.end{background:var(--ink2);border-top:1.5px solid var(--line);padding-block:40px 48px}
+.end h2{margin:8px 0 18px}
+.social{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.social a{text-align:center;text-decoration:none;border:2px solid var(--line);border-radius:12px;padding:12px 6px;font-family:var(--mono);font-size:13px;font-weight:700}
+.social a:hover{border-color:var(--green)}
+.foot{margin-top:28px;font-family:var(--mono);font-size:12px;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+
+<header class="hero"><div class="wrap">
+  <div class="top">
+    <div class="logo" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26"><path d="M3 20 L10 13 L14 17 L22 7" fill="none" stroke="#3DDC84" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 6.5 H22.5 V13" fill="none" stroke="#3DDC84" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><b>Negocios + IA</b><span>@negociosmasia</span></div>
+  </div>
+  <p class="lab">Para comercios, emprendedores y profesionales</p>
+  <h1>Tu negocio vendiendo <em>más</em> con IA.</h1>
+  <p class="sub">Te armamos la web, los turnos online y el contenido para que te encuentren y te reserven sin que tengas que estar pegado al celular.</p>
+  <div class="row">
+    <a class="btn wa" href="https://wa.me/5491100000000?text=Hola!%20Vengo%20de%20Negocios%20%2B%20IA%20y%20quiero%20info" target="_blank" rel="noopener">Escribinos por WhatsApp →</a>
+    <a class="btn ghost" href="#precios">Ver servicios y precios</a>
+  </div>
+  <p class="num">WhatsApp: <code id="tel">+54 9 11 0000-0000</code><button type="button" id="copy">Copiar</button></p>
+</div></header>
+
+<section class="prices" id="precios"><div class="wrap">
+  <p class="lab">Servicios · precios en dólares</p>
+  <h2>Lo que hacemos por tu negocio</h2>
+  <div class="svc"><h3>Web con turnos por WhatsApp <span class="tag">MÁS PEDIDO</span></h3><p>Una página con tus servicios, precios, horarios, ubicación y botón para reservar. Lista en 5 días.</p><div class="p">US$120<small>DESDE</small></div></div>
+  <div class="svc"><h3>Sistema de turnos online</h3><p>Tus clientes eligen día y hora solos, y vos recibís el aviso. Menos mensajes, menos ausencias.</p><div class="p">US$100<small>DESDE</small></div></div>
+  <div class="svc"><h3>Pack de 8 reels por mes</h3><p>Videos cortos con guion, voz y edición para Instagram y TikTok, pensados para tu rubro.</p><div class="p">US$80<small>POR MES</small></div></div>
+  <div class="svc"><h3>WhatsApp Business + Perfil de Google</h3><p>Catálogo, mensajes automáticos de bienvenida y ausencia, y tu negocio en Google Maps.</p><div class="p">US$40<small>PAGO ÚNICO</small></div></div>
+  <p class="note">Mantenimiento de la web opcional: US$15 por mes (cambios de precios, fotos y horarios). Podemos cobrar en pesos al cambio del día.</p>
+</div></section>
+
+<section class="demo"><div class="wrap">
+  <p class="lab">Ejemplo real</p>
+  <h2>Mirá cómo queda la web de una barbería</h2>
+  <p>Servicios, precios, horarios y turnos por WhatsApp en una sola página. La tuya sale con tus colores, fotos y datos.</p>
+  <a class="btn" href="https://claude.ai/artifact/Cp8huG887zKUWcbmS3VvbP" target="_blank" rel="noopener">Ver la demo →</a>
+</div></section>
+
+<section class="steps"><div class="wrap">
+  <p class="lab">Cómo trabajamos</p>
+  <h2>Tres pasos y listo</h2>
+  <ol>
+    <li><div><b>Nos contás de tu negocio</b><span>Por WhatsApp: qué vendés, a quién y qué te gustaría mejorar.</span></div></li>
+    <li><div><b>Te mandamos la propuesta</b><span>Qué incluye, cómo queda y cuánto sale. Sin compromiso.</span></div></li>
+    <li><div><b>Arrancamos</b><span>50% para empezar y 50% cuando lo entregamos funcionando.</span></div></li>
+  </ol>
+</div></section>
+
+<section class="faq"><div class="wrap">
+  <p class="lab">Preguntas frecuentes</p>
+  <h2>Antes de escribirnos</h2>
+  <details><summary>¿Necesito saber de tecnología?</summary><p>No. Vos nos pasás fotos, precios y horarios, y nosotros hacemos todo. Te explicamos cómo usarlo en 10 minutos.</p></details>
+  <details><summary>¿Cuánto tarda?</summary><p>Una web de una página está lista en 5 días desde que tenemos tus datos. WhatsApp Business y Google, en 1 o 2 días.</p></details>
+  <details><summary>¿Tengo que pagar todos los meses?</summary><p>No. La web y la configuración se pagan una vez. El mantenimiento y los reels son mensuales y opcionales.</p></details>
+  <details><summary>¿Atienden fuera de Argentina?</summary><p>Sí, trabajamos todo a distancia. Atendemos negocios de cualquier país de habla hispana.</p></details>
+  <details><summary>¿Para qué rubros sirve?</summary><p>Barberías, peluquerías, consultorios, estética, gimnasios, comida, tiendas y cualquier negocio que reciba clientes o pedidos.</p></details>
+</div></section>
+
+<footer class="end"><div class="wrap">
+  <p class="lab">¿Hablamos?</p>
+  <h2>Contanos de tu negocio y te decimos qué te conviene.</h2>
+  <a class="btn wa" href="https://wa.me/5491100000000?text=Hola!%20Vengo%20de%20Negocios%20%2B%20IA%20y%20quiero%20info" target="_blank" rel="noopener">Escribinos por WhatsApp →</a>
+  <div class="social">
+    <a href="https://www.instagram.com/negociomasia/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.tiktok.com/@negociosmasia" target="_blank" rel="noopener">TikTok</a>
+    <a href="#precios">Precios</a>
+  </div>
+  <p class="foot">Negocios + IA · Ideas cada semana para que tu negocio venda más</p>
+</div></footer>
+
+<script>
+document.getElementById('copy').addEventListener('click', function(){
+  var b=this, t=document.getElementById('tel').textContent;
+  function ok(){b.textContent='Copiado';setTimeout(function(){b.textContent='Copiar'},1500)}
+  function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById('tel'));var s=getSelection();s.removeAllRanges();s.addRange(r);}
+  try{navigator.clipboard.writeText(t).then(ok,sel)}catch(e){sel()}
+});
+</script>
