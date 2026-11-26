@@ -7,20 +7,20 @@ import { groupGalleryByCategory } from "../lib/groupGallery";
 
 const SUGGESTED_CATEGORIES = ["Deporte", "Lifestyle", "Gastronomía", "Experiencias"];
 
+// Sube todos los archivos en paralelo (no uno por uno), así elegir varias
+// fotos/videos juntos no suma sus tiempos de espera.
 async function uploadFiles(files, category, startPosition) {
-  const rows = [];
-  let position = startPosition;
-  for (const file of files) {
-    const isVideo = file.type.startsWith("video");
-    if (isVideo) {
-      const { url, posterUrl } = await uploadGalleryVideo(file);
-      rows.push({ media_type: "video", url, poster_url: posterUrl, category, position: position++ });
-    } else {
+  return Promise.all(
+    files.map(async (file, i) => {
+      const position = startPosition + i;
+      if (file.type.startsWith("video")) {
+        const { url, posterUrl } = await uploadGalleryVideo(file);
+        return { media_type: "video", url, poster_url: posterUrl, category, position };
+      }
       const { url } = await uploadGalleryFile(file);
-      rows.push({ media_type: "image", url, category, position: position++ });
-    }
-  }
-  return rows;
+      return { media_type: "image", url, category, position };
+    }),
+  );
 }
 
 function Thumb({ item, onDelete }) {
