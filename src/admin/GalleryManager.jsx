@@ -26,17 +26,20 @@ function friendlyError(err) {
 // fotos/videos juntos no suma sus tiempos de espera. Si alguno falla (por
 // ejemplo un video muy pesado) no se pierden los demás: cada archivo se
 // resuelve por separado y los que sí se pudieron subir se guardan igual.
-async function uploadFiles(files, category, startPosition) {
+// onFileProgress(file, fraction) se llama durante la subida de cada uno
+// para poder mostrar una barra de progreso real.
+async function uploadFiles(files, category, startPosition, onFileProgress) {
   const results = await Promise.allSettled(
     files.map(async (file) => {
       if (file.size > MAX_FILE_SIZE) {
         throw new Error(SIZE_LIMIT_MESSAGE);
       }
+      const onProgress = (fraction) => onFileProgress?.(file, fraction);
       if (file.type.startsWith("video")) {
-        const { url, posterUrl } = await uploadGalleryVideo(file);
+        const { url, posterUrl } = await uploadGalleryVideo(file, onProgress);
         return { media_type: "video", url, poster_url: posterUrl, category };
       }
-      const { url } = await uploadGalleryFile(file);
+      const { url } = await uploadGalleryFile(file, onProgress);
       return { media_type: "image", url, category };
     }),
   );
@@ -52,6 +55,28 @@ async function uploadFiles(files, category, startPosition) {
     }
   });
   return { rows, failures };
+}
+
+function UploadProgressList({ items }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <div className="mt-3 flex flex-col gap-2">
+      {items.map(({ name, progress }) => (
+        <div key={name} className="flex flex-col gap-1">
+          <div className="flex items-center justify-between text-[11px] text-ink/60">
+            <span className="truncate">{name}</span>
+            <span className="shrink-0 tabular-nums">{Math.round(progress * 100)}%</span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink/10">
+            <div
+              className="h-full rounded-full bg-gold transition-[width] duration-200 ease-out"
+              style={{ width: `${Math.max(4, Math.round(progress * 100))}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function Thumb({ item, onDelete }) {
@@ -117,11 +142,13 @@ function FolderBlock({ folder, onRefresh, onUploadFailures }) {
   const [nameInput, setNameInput] = useState(folder.label);
   const [uploading, setUploading] = useState(false);
   const [deletingFolder, setDeletingFolder] = useState(false);
+  const [progress, setProgress] = useState([]);
 
   const handleAddFiles = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
     setUploading(true);
+    setProgress(files.map((f) => ({ name: f.name, progress: 0 })));
     try {
       const start = folder.items.length
         ? Math.max(...folder.items.map((g) => g.position)) + 1
@@ -130,6 +157,10 @@ function FolderBlock({ folder, onRefresh, onUploadFailures }) {
         files,
         folder.label === "Sin carpeta" ? null : folder.label,
         start,
+        (file, fraction) =>
+          setProgress((prev) =>
+            prev.map((p) => (p.name === file.name ? { ...p, progress: fraction } : p)),
+          ),
       );
       if (rows.length > 0) {
         const { error } = await supabase.from("gallery_items").insert(rows);
@@ -142,6 +173,7 @@ function FolderBlock({ folder, onRefresh, onUploadFailures }) {
       onUploadFailures([{ name: "", reason: friendlyError(err) }]);
     }
     setUploading(false);
+    setProgress([]);
     e.target.value = "";
   };
 
@@ -253,6 +285,8 @@ function FolderBlock({ folder, onRefresh, onUploadFailures }) {
           <Thumb key={item.id} item={item} onDelete={() => deleteItem(item.id)} />
         ))}
       </div>
+
+      <UploadProgressList items={progress} />
     </div>
   );
 }
@@ -263,6 +297,7 @@ export default function GalleryManager() {
   const [newName, setNewName] = useState("");
   const [uploading, setUploading] = useState(false);
   const [issue, setIssue] = useState(null);
+  const [createProgress, setCreateProgress] = useState([]);
 
   const folders = useMemo(() => groupGalleryByCategory(gallery), [gallery]);
   const existingNames = useMemo(() => folders.map((f) => f.label), [folders]);
@@ -272,8 +307,13 @@ export default function GalleryManager() {
     const name = newName.trim();
     if (files.length === 0 || !name) return;
     setUploading(true);
+    setCreateProgress(files.map((f) => ({ name: f.name, progress: 0 })));
     try {
-      const { rows, failures } = await uploadFiles(files, name, 0);
+      const { rows, failures } = await uploadFiles(files, name, 0, (file, fraction) =>
+        setCreateProgress((prev) =>
+          prev.map((p) => (p.name === file.name ? { ...p, progress: fraction } : p)),
+        ),
+      );
       if (rows.length > 0) {
         const { error: insertError } = await supabase.from("gallery_items").insert(rows);
         if (insertError) throw insertError;
@@ -287,6 +327,7 @@ export default function GalleryManager() {
       setIssue([{ name: "", reason: friendlyError(err) }]);
     }
     setUploading(false);
+    setCreateProgress([]);
     e.target.value = "";
   };
 
@@ -351,6 +392,8 @@ export default function GalleryManager() {
             Crear carpeta nueva
           </button>
         )}
+
+        <UploadProgressList items={createProgress} />
       </div>
 
       <UploadIssueModal failures={issue} onClose={() => setIssue(null)} />
