@@ -22,6 +22,14 @@ Metricool no sigue competidores de TikTok: estas cuentas se analizan con captura
 - Monetiza: cursos, "vídeos para empresas", YouTube.
 - Para copiar: mascota propia, portadas con número, ganchos "gratis / dejá de pagar" aplicados a negocios, behind the scenes de cómo hacemos los videos.
 
+## Santiago Ferrer (@santiagoferrerk) — Instagram · Argentina · sistemas de ventas para tiendas online · 9.440 seguidores
+- Se puede agregar como competidor en Metricool (es Instagram).
+- Nicho muy concreto (tiendas online) + prueba en la bio ("+50 tiendas escaladas a +100k usd/mes").
+- Gancho fijo: "Dejá de ___ así" (Black Friday, carteles en productos, descripciones).
+- Da la cara, voz argentina, escritorio: confianza para vender servicios caros.
+- Pocas vistas (2–3 mil) pero embudo armado: link a landing propia + destacadas "academia" y su agencia.
+- Para copiar: gancho "Dejá de ___ así", landing propia con servicios + WhatsApp, pruebas en la bio, aparecer en cámara de vez en cuando.
+
 ## Ideas para la tanda 4
 1. Mascota propia con la flecha verde del logo (generar opciones).
 2. Portada con número grande + promesa en cada video.
@@ -31,3 +39,5 @@ Metricool no sigue competidores de TikTok: estas cuentas se analizan con captura
 6. "Tu web se ve barata por esto" (antes/después).
 7. Casos por rubro: bot de WhatsApp para peluquería, turnos online para consultorio.
 8. Video fijado: "Te armo la web de tu negocio" + link de la demo en la bio.
+9. Ganchos "Dejá de ___ así" (precio, productos, turnos).
+10. Landing propia de Negocios + IA para el link de la bio.
