@@ -34,8 +34,8 @@ const inputClass =
   "w-full rounded border border-ink/20 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-ink/60";
 
 export default function AdminDashboard() {
-  const { content, refresh } = useSiteContent();
-  const [form, setForm] = useState(() => structuredClone(content));
+  const { content, loading, refresh } = useSiteContent();
+  const [form, setForm] = useState(null);
   const [activeTab, setActiveTab] = useState("hero");
   const [status, setStatus] = useState("idle"); // idle | saving | saved | error
   const [errorMsg, setErrorMsg] = useState("");
@@ -43,7 +43,20 @@ export default function AdminDashboard() {
   const skipNextSave = useRef(true);
   const saveTimer = useRef(null);
 
+  // El formulario recién se arma cuando terminó de llegar lo guardado de
+  // verdad desde Supabase — si se armara antes (con el contenido por
+  // defecto, de respaldo), cualquier guardado automático pisaría lo real
+  // con esos valores de ejemplo.
   useEffect(() => {
+    if (!loading && form === null) {
+      skipNextSave.current = true;
+      setForm(structuredClone(content));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  useEffect(() => {
+    if (form === null) return;
     if (skipNextSave.current) {
       skipNextSave.current = false;
       return;
@@ -68,6 +81,14 @@ export default function AdminDashboard() {
     return () => clearTimeout(saveTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
+
+  if (form === null) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-cream">
+        <p className="text-sm text-ink/50">Cargando…</p>
+      </div>
+    );
+  }
 
   const setProfile = (patch) =>
     setForm((f) => ({ ...f, profile: { ...f.profile, ...patch } }));
