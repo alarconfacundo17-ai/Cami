@@ -1,175 +1,314 @@
 import { useMemo, useState } from "react";
-import { ImagePlus, Pencil, Play, Trash2 } from "lucide-react";
+import { FolderPlus, ImagePlus, Pencil, Trash2, Play, Check, X } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { uploadGalleryFile, uploadGalleryVideo } from "./storage";
 import { useSiteContent } from "../siteContent/SiteContentContext";
+import { groupGalleryByCategory } from "../lib/groupGallery";
 
 const SUGGESTED_CATEGORIES = ["Deporte", "Lifestyle", "Gastronomía", "Experiencias"];
 
-export default function GalleryManager() {
-  const { gallery, refresh } = useSiteContent();
-  const [category, setCategory] = useState("");
+async function uploadFiles(files, category, startPosition) {
+  const rows = [];
+  let position = startPosition;
+  for (const file of files) {
+    const isVideo = file.type.startsWith("video");
+    if (isVideo) {
+      const { url, posterUrl } = await uploadGalleryVideo(file);
+      rows.push({ media_type: "video", url, poster_url: posterUrl, category, position: position++ });
+    } else {
+      const { url } = await uploadGalleryFile(file);
+      rows.push({ media_type: "image", url, category, position: position++ });
+    }
+  }
+  return rows;
+}
+
+function Thumb({ item, onDelete }) {
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <div className="group relative aspect-square overflow-hidden rounded bg-ink/10">
+      {item.media_type === "video" ? (
+        <>
+          <img src={item.poster_url} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-ink">
+              <Play size={13} fill="currentColor" className="ml-0.5" />
+            </span>
+          </div>
+        </>
+      ) : (
+        <img src={item.url} alt="" className="h-full w-full object-cover" />
+      )}
+
+      {confirming ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/70 px-2 text-center">
+          <p className="text-[11px] text-white">¿Borrar?</p>
+          <div className="flex gap-1.5">
+            <button
+              type="button"
+              onClick={onDelete}
+              className="rounded-full bg-red-600 p-1.5 text-white"
+              aria-label="Confirmar borrado"
+            >
+              <Check size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="rounded-full bg-white/90 p-1.5 text-ink"
+              aria-label="Cancelar"
+            >
+              <X size={13} />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setConfirming(true)}
+          className="absolute right-1 top-1 rounded-full bg-black/60 p-1.5 text-white"
+          aria-label="Borrar"
+        >
+          <Trash2 size={13} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function FolderBlock({ folder, onRefresh }) {
+  const [renaming, setRenaming] = useState(false);
+  const [nameInput, setNameInput] = useState(folder.label);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [editingValue, setEditingValue] = useState("");
+  const [deletingFolder, setDeletingFolder] = useState(false);
 
-  const categoryOptions = useMemo(() => {
-    const fromGallery = gallery.map((g) => g.category).filter(Boolean);
-    return [...new Set([...SUGGESTED_CATEGORIES, ...fromGallery])];
-  }, [gallery]);
-
-  const handleAdd = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setError("");
+  const handleAddFiles = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     setUploading(true);
     try {
-      const isVideo = file.type.startsWith("video");
-      const position = gallery.length
-        ? Math.max(...gallery.map((g) => g.position)) + 1
+      const start = folder.items.length
+        ? Math.max(...folder.items.map((g) => g.position)) + 1
         : 0;
-      const categoryValue = category.trim() || null;
-
-      let row;
-      if (isVideo) {
-        const { url, posterUrl } = await uploadGalleryVideo(file);
-        row = { media_type: "video", url, poster_url: posterUrl, category: categoryValue, position };
-      } else {
-        const { url } = await uploadGalleryFile(file);
-        row = { media_type: "image", url, category: categoryValue, position };
-      }
-
-      const { error: insertError } = await supabase.from("gallery_items").insert(row);
-      if (insertError) throw insertError;
-      await refresh();
+      const rows = await uploadFiles(files, folder.label === "Sin carpeta" ? null : folder.label, start);
+      const { error } = await supabase.from("gallery_items").insert(rows);
+      if (error) throw error;
+      await onRefresh();
     } catch (err) {
       console.error(err);
-      setError("No se pudo subir el archivo.");
     }
     setUploading(false);
     e.target.value = "";
   };
 
-  const handleDelete = async (id) => {
-    await supabase.from("gallery_items").delete().eq("id", id);
-    await refresh();
-  };
-
-  const startEditing = (item) => {
-    setEditingId(item.id);
-    setEditingValue(item.category ?? "");
-  };
-
-  const saveEditing = async () => {
-    const id = editingId;
-    setEditingId(null);
+  const saveRename = async () => {
+    const newName = nameInput.trim();
+    setRenaming(false);
+    if (!newName || newName === folder.label) return;
     await supabase
       .from("gallery_items")
-      .update({ category: editingValue.trim() || null })
-      .eq("id", id);
-    await refresh();
+      .update({ category: newName })
+      .eq("category", folder.label === "Sin carpeta" ? null : folder.label);
+    await onRefresh();
+  };
+
+  const deleteFolder = async () => {
+    await supabase
+      .from("gallery_items")
+      .delete()
+      .eq("category", folder.label === "Sin carpeta" ? null : folder.label);
+    await onRefresh();
+  };
+
+  const deleteItem = async (id) => {
+    await supabase.from("gallery_items").delete().eq("id", id);
+    await onRefresh();
   };
 
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-label text-ink/50">
-        Galería (fotos y videos sueltos)
-      </p>
-
-      <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
-        {gallery.map((item) => (
-          <div key={item.id} className="group relative aspect-[3/4] overflow-hidden rounded bg-ink/10">
-            {item.media_type === "video" ? (
-              <>
-                <video
-                  src={item.url}
-                  poster={item.poster_url}
-                  muted
-                  playsInline
-                  preload="metadata"
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink">
-                    <Play size={14} fill="currentColor" className="ml-0.5" />
-                  </span>
-                </div>
-              </>
-            ) : (
-              <img src={item.url} alt="" className="h-full w-full object-cover" />
-            )}
-
+    <div className="rounded-md border border-ink/10 bg-white/50 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        {renaming ? (
+          <div className="flex items-center gap-2">
+            <input
+              autoFocus
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && saveRename()}
+              className="rounded border border-ink/20 bg-white px-2 py-1 text-sm text-ink outline-none focus:border-ink/60"
+            />
+            <button type="button" onClick={saveRename} className="text-ink/60 hover:text-ink">
+              <Check size={16} />
+            </button>
             <button
               type="button"
-              onClick={() => handleDelete(item.id)}
-              className="absolute right-1 top-1 rounded-full bg-black/60 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
-              aria-label="Borrar"
+              onClick={() => {
+                setRenaming(false);
+                setNameInput(folder.label);
+              }}
+              className="text-ink/40 hover:text-ink"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setRenaming(true)}
+            className="flex items-center gap-1.5 text-sm font-medium text-ink"
+          >
+            {folder.label}
+            <span className="text-ink/40">({folder.items.length})</span>
+            <Pencil size={12} className="text-ink/40" />
+          </button>
+        )}
+
+        <div className="flex items-center gap-3">
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-ink/70 hover:text-ink">
+            <ImagePlus size={14} />
+            {uploading ? "Subiendo…" : "Agregar"}
+            <input
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              className="hidden"
+              onChange={handleAddFiles}
+              disabled={uploading}
+            />
+          </label>
+
+          {deletingFolder ? (
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-ink/60">¿Borrar carpeta?</span>
+              <button type="button" onClick={deleteFolder} className="font-medium text-red-700">
+                Sí
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeletingFolder(false)}
+                className="text-ink/50"
+              >
+                No
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setDeletingFolder(true)}
+              className="text-ink/40 hover:text-red-700"
+              aria-label="Borrar carpeta"
             >
               <Trash2 size={14} />
             </button>
+          )}
+        </div>
+      </div>
 
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-5">
-              {editingId === item.id ? (
-                <input
-                  autoFocus
-                  value={editingValue}
-                  onChange={(e) => setEditingValue(e.target.value)}
-                  onBlur={saveEditing}
-                  onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-                  placeholder="Carpeta"
-                  className="w-full rounded bg-white/90 px-1.5 py-0.5 text-[11px] text-ink outline-none"
-                />
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => startEditing(item)}
-                  className="flex items-center gap-1 text-[11px] text-white/90 hover:text-white"
-                >
-                  {item.category || "Sin carpeta"}
-                  <Pencil size={10} />
-                </button>
-              )}
-            </div>
-          </div>
+      <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-5">
+        {folder.items.map((item) => (
+          <Thumb key={item.id} item={item} onDelete={() => deleteItem(item.id)} />
         ))}
+      </div>
+    </div>
+  );
+}
 
-        <label className="flex aspect-[3/4] cursor-pointer flex-col items-center justify-center gap-1 rounded border-2 border-dashed border-ink/20 text-ink/50 hover:border-ink/50">
-          <ImagePlus size={20} />
-          <span className="text-xs">{uploading ? "Subiendo…" : "Agregar"}</span>
-          <input
-            type="file"
-            accept="image/*,video/*"
-            className="hidden"
-            onChange={handleAdd}
-            disabled={uploading}
-          />
-        </label>
+export default function GalleryManager() {
+  const { gallery, refresh } = useSiteContent();
+  const [creating, setCreating] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  const folders = useMemo(() => groupGalleryByCategory(gallery), [gallery]);
+  const existingNames = useMemo(() => folders.map((f) => f.label), [folders]);
+
+  const handleCreate = async (e) => {
+    const files = Array.from(e.target.files || []);
+    const name = newName.trim();
+    if (files.length === 0 || !name) return;
+    setError("");
+    setUploading(true);
+    try {
+      const rows = await uploadFiles(files, name, 0);
+      const { error: insertError } = await supabase.from("gallery_items").insert(rows);
+      if (insertError) throw insertError;
+      await refresh();
+      setCreating(false);
+      setNewName("");
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo crear la carpeta.");
+    }
+    setUploading(false);
+    e.target.value = "";
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {folders.map((folder) => (
+        <FolderBlock key={folder.label} folder={folder} onRefresh={refresh} />
+      ))}
+
+      <div className="rounded-md border-2 border-dashed border-ink/20 p-4">
+        {creating ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <input
+              autoFocus
+              list="new-folder-suggestions"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Nombre de la carpeta (ej. Deporte)"
+              className="w-full rounded border border-ink/20 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-ink/60 sm:w-64"
+            />
+            <datalist id="new-folder-suggestions">
+              {[...new Set([...SUGGESTED_CATEGORIES, ...existingNames])].map((opt) => (
+                <option key={opt} value={opt} />
+              ))}
+            </datalist>
+
+            <label
+              className={`flex cursor-pointer items-center gap-1.5 rounded border border-ink/20 bg-white px-3 py-2 text-xs font-medium text-ink hover:border-ink/60 ${
+                !newName.trim() ? "pointer-events-none opacity-40" : ""
+              }`}
+            >
+              <ImagePlus size={14} />
+              {uploading ? "Subiendo…" : "Elegir fotos/videos"}
+              <input
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                className="hidden"
+                onChange={handleCreate}
+                disabled={uploading || !newName.trim()}
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={() => {
+                setCreating(false);
+                setNewName("");
+              }}
+              className="text-xs text-ink/50 hover:text-ink"
+            >
+              Cancelar
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setCreating(true)}
+            className="flex items-center gap-2 text-sm font-medium text-ink/70 hover:text-ink"
+          >
+            <FolderPlus size={18} />
+            Crear carpeta nueva
+          </button>
+        )}
       </div>
 
-      <div className="mt-4 max-w-xs">
-        <p className="text-xs font-medium uppercase tracking-label text-ink/50">
-          Carpeta para lo próximo que subas
-        </p>
-        <input
-          list="gallery-categories"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          placeholder="Ej: Deporte, Viajes, Moda…"
-          className="mt-2 w-full rounded border border-ink/20 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-ink/60"
-        />
-        <datalist id="gallery-categories">
-          {categoryOptions.map((opt) => (
-            <option key={opt} value={opt} />
-          ))}
-        </datalist>
-        <p className="mt-1 text-[11px] text-ink/50">
-          Dejalo vacío para que quede sin carpeta. Podés tocar el nombre debajo de
-          cada foto/video de arriba para cambiarlo después.
-        </p>
-      </div>
-
-      {error && <p className="mt-2 text-xs text-red-700">{error}</p>}
+      {error && <p className="text-xs text-red-700">{error}</p>}
     </div>
   );
 }

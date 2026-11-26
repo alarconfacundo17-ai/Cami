@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import PlaceholderPhoto from "./PlaceholderPhoto";
 import AlbumView from "./AlbumView";
 import { useSiteContent } from "../siteContent/SiteContentContext";
+import { groupGalleryByCategory } from "../lib/groupGallery";
 
 const ICONS = { dumbbell: Dumbbell, apple: Apple, camera: Camera, star: Star };
 const TONES = ["cool", "sunset", "stone", "warm"];
@@ -54,15 +55,7 @@ export default function About() {
   const { profile, aboutHighlights } = content;
   const [openFolder, setOpenFolder] = useState(null);
 
-  const folders = useMemo(() => {
-    const map = new Map();
-    for (const item of gallery) {
-      const key = item.category || "Otros";
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(item);
-    }
-    return [...map.entries()].map(([label, items]) => ({ label, items }));
-  }, [gallery]);
+  const folders = useMemo(() => groupGalleryByCategory(gallery), [gallery]);
 
   return (
     <section id="sobre-mi" className="bg-cream py-20 lg:py-24">

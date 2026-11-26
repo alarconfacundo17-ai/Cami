@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LogOut, ExternalLink } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { useSiteContent } from "../siteContent/SiteContentContext";
@@ -9,14 +9,15 @@ import GalleryManager from "./GalleryManager";
 const HIGHLIGHT_ICONS = ["dumbbell", "apple", "camera", "star"];
 const STAT_LABELS = ["Instagram", "TikTok", "Alcance", "Reproducciones"];
 
-function Section({ title, children }) {
-  return (
-    <section className="rounded-md bg-white/60 p-6">
-      <h2 className="font-serif-display text-xl text-ink">{title}</h2>
-      <div className="mt-5 flex flex-col gap-6">{children}</div>
-    </section>
-  );
-}
+const TABS = [
+  { id: "hero", label: "Hero" },
+  { id: "sobre-mi", label: "Sobre mí" },
+  { id: "comunidad", label: "Comunidad" },
+  { id: "contenido", label: "Contenido" },
+  { id: "marcas", label: "Marcas" },
+  { id: "contacto", label: "Contacto" },
+  { id: "galeria", label: "Galería" },
+];
 
 function Field({ label, children }) {
   return (
@@ -35,8 +36,38 @@ const inputClass =
 export default function AdminDashboard() {
   const { content, refresh } = useSiteContent();
   const [form, setForm] = useState(() => structuredClone(content));
-  const [saving, setSaving] = useState(false);
-  const [savedAt, setSavedAt] = useState(null);
+  const [activeTab, setActiveTab] = useState("hero");
+  const [status, setStatus] = useState("idle"); // idle | saving | saved | error
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const skipNextSave = useRef(true);
+  const saveTimer = useRef(null);
+
+  useEffect(() => {
+    if (skipNextSave.current) {
+      skipNextSave.current = false;
+      return;
+    }
+    setStatus("saving");
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      const { error } = await supabase
+        .from("site_content")
+        .upsert({ id: 1, data: form, updated_at: new Date().toISOString() });
+
+      if (error) {
+        console.error(error);
+        setStatus("error");
+        setErrorMsg(error.message);
+        return;
+      }
+      await refresh();
+      setStatus("saved");
+    }, 700);
+
+    return () => clearTimeout(saveTimer.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form]);
 
   const setProfile = (patch) =>
     setForm((f) => ({ ...f, profile: { ...f.profile, ...patch } }));
@@ -47,243 +78,248 @@ export default function AdminDashboard() {
       [key]: f[key].map((item, idx) => (idx === i ? { ...item, ...patch } : item)),
     }));
 
-  const [saveError, setSaveError] = useState("");
-
-  const handleSave = async () => {
-    setSaving(true);
-    setSaveError("");
-    const { error } = await supabase
-      .from("site_content")
-      .upsert({ id: 1, data: form, updated_at: new Date().toISOString() });
-
-    if (error) {
-      console.error(error);
-      setSaving(false);
-      setSaveError("No se pudo guardar: " + error.message);
-      return;
-    }
-
-    await refresh();
-    setSaving(false);
-    setSavedAt(Date.now());
-  };
+  const statusLabel =
+    status === "saving"
+      ? "Guardando…"
+      : status === "error"
+        ? `Error: ${errorMsg}`
+        : status === "saved"
+          ? "Guardado ✓"
+          : "";
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
-      <div className="sticky top-0 z-10 flex items-center justify-between bg-ink px-6 py-4 text-white">
-        <h1 className="font-serif-display text-lg">Panel de edición</h1>
-        <div className="flex items-center gap-4">
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-sm text-white/80 hover:text-white"
-          >
-            Ver sitio <ExternalLink size={14} />
-          </a>
-          <button
-            type="button"
-            onClick={() => supabase.auth.signOut()}
-            className="flex items-center gap-1 text-sm text-white/80 hover:text-white"
-          >
-            <LogOut size={15} /> Salir
-          </button>
+    <div className="min-h-screen bg-cream">
+      <div className="sticky top-0 z-10 bg-ink text-white">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div>
+            <h1 className="font-serif-display text-lg">Panel de edición</h1>
+            <p
+              className={`text-xs ${status === "error" ? "text-red-400" : "text-white/50"}`}
+            >
+              {statusLabel}
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-sm text-white/80 hover:text-white"
+            >
+              Ver sitio <ExternalLink size={14} />
+            </a>
+            <button
+              type="button"
+              onClick={() => supabase.auth.signOut()}
+              className="flex items-center gap-1 text-sm text-white/80 hover:text-white"
+            >
+              <LogOut size={15} /> Salir
+            </button>
+          </div>
+        </div>
+
+        <div className="flex gap-1 overflow-x-auto border-t border-white/10 px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`shrink-0 rounded-full px-4 py-1.5 text-sm transition-colors ${
+                activeTab === tab.id
+                  ? "bg-white text-ink"
+                  : "text-white/70 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="mx-auto mt-8 flex max-w-3xl flex-col gap-6 px-6">
-        <Section title="Hero">
-          <Field label="Nombre">
-            <input
-              className={inputClass}
-              value={form.profile.name}
-              onChange={(e) => setProfile({ name: e.target.value })}
+      <div className="mx-auto max-w-3xl px-6 py-8">
+        {activeTab === "hero" && (
+          <div className="flex flex-col gap-6">
+            <Field label="Nombre">
+              <input
+                className={inputClass}
+                value={form.profile.name}
+                onChange={(e) => setProfile({ name: e.target.value })}
+              />
+            </Field>
+            <Field label="Etiqueta (arriba del nombre)">
+              <input
+                className={inputClass}
+                value={form.profile.tagline}
+                onChange={(e) => setProfile({ tagline: e.target.value })}
+              />
+            </Field>
+            <TextListEditor
+              label="Categorías (Fitness · Lifestyle · ...)"
+              items={form.profile.categories}
+              onChange={(categories) => setProfile({ categories })}
             />
-          </Field>
-          <Field label="Etiqueta (arriba del nombre)">
-            <input
-              className={inputClass}
-              value={form.profile.tagline}
-              onChange={(e) => setProfile({ tagline: e.target.value })}
+            <Field label="Nota escrita a mano sobre la foto">
+              <textarea
+                rows={3}
+                className={inputClass}
+                value={form.profile.heroNote}
+                onChange={(e) => setProfile({ heroNote: e.target.value })}
+              />
+            </Field>
+            <ImageField
+              label="Foto principal"
+              value={form.profile.heroImage}
+              path="site/hero"
+              onChange={(heroImage) => setProfile({ heroImage })}
             />
-          </Field>
-          <TextListEditor
-            label="Categorías (Fitness · Lifestyle · ...)"
-            items={form.profile.categories}
-            onChange={(categories) => setProfile({ categories })}
-          />
-          <Field label="Nota escrita a mano sobre la foto">
-            <textarea
-              rows={3}
-              className={inputClass}
-              value={form.profile.heroNote}
-              onChange={(e) => setProfile({ heroNote: e.target.value })}
-            />
-          </Field>
-          <ImageField
-            label="Foto principal"
-            value={form.profile.heroImage}
-            path="site/hero"
-            onChange={(heroImage) => setProfile({ heroImage })}
-          />
-        </Section>
+          </div>
+        )}
 
-        <Section title="Sobre mí">
-          <Field label="Título de la sección">
-            <input
-              className={inputClass}
-              value={form.profile.aboutTitle}
-              onChange={(e) => setProfile({ aboutTitle: e.target.value })}
+        {activeTab === "sobre-mi" && (
+          <div className="flex flex-col gap-6">
+            <Field label="Título de la sección">
+              <input
+                className={inputClass}
+                value={form.profile.aboutTitle}
+                onChange={(e) => setProfile({ aboutTitle: e.target.value })}
+              />
+            </Field>
+            <Field label="Saludo inicial">
+              <input
+                className={inputClass}
+                value={form.profile.aboutGreeting}
+                onChange={(e) => setProfile({ aboutGreeting: e.target.value })}
+              />
+            </Field>
+            <TextListEditor
+              label="Párrafos de la bio"
+              items={form.profile.aboutParagraphs}
+              onChange={(aboutParagraphs) => setProfile({ aboutParagraphs })}
+              multiline
             />
-          </Field>
-          <Field label="Saludo inicial">
-            <input
-              className={inputClass}
-              value={form.profile.aboutGreeting}
-              onChange={(e) => setProfile({ aboutGreeting: e.target.value })}
-            />
-          </Field>
-          <TextListEditor
-            label="Párrafos de la bio"
-            items={form.profile.aboutParagraphs}
-            onChange={(aboutParagraphs) => setProfile({ aboutParagraphs })}
-            multiline
-          />
 
-          <div>
-            <p className="text-xs font-medium uppercase tracking-label text-ink/50">
-              Destacados (con ícono)
-            </p>
-            <div className="mt-2 flex flex-col gap-3">
-              {form.aboutHighlights.map((h, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <select
-                    value={h.icon}
-                    onChange={(e) => setArrayItem("aboutHighlights", i, { icon: e.target.value })}
-                    className={`${inputClass} w-36 shrink-0`}
-                  >
-                    {HIGHLIGHT_ICONS.map((icon) => (
-                      <option key={icon} value={icon}>
-                        {icon}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    className={inputClass}
-                    value={h.label}
-                    onChange={(e) => setArrayItem("aboutHighlights", i, { label: e.target.value })}
-                  />
-                </div>
-              ))}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-label text-ink/50">
+                Destacados (con ícono)
+              </p>
+              <div className="mt-2 flex flex-col gap-3">
+                {form.aboutHighlights.map((h, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <select
+                      value={h.icon}
+                      onChange={(e) => setArrayItem("aboutHighlights", i, { icon: e.target.value })}
+                      className={`${inputClass} w-36 shrink-0`}
+                    >
+                      {HIGHLIGHT_ICONS.map((icon) => (
+                        <option key={icon} value={icon}>
+                          {icon}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      className={inputClass}
+                      value={h.label}
+                      onChange={(e) => setArrayItem("aboutHighlights", i, { label: e.target.value })}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </Section>
+        )}
 
-        <Section title="Foto grande (sección Tipos de contenido)">
-          <ImageField
-            label="Foto"
-            value={form.contentCollabImage}
-            path="site/content-collab"
-            onChange={(contentCollabImage) => setForm((f) => ({ ...f, contentCollabImage }))}
-          />
-        </Section>
+        {activeTab === "comunidad" && (
+          <div className="flex flex-col gap-4">
+            {form.stats.map((s, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="w-24 shrink-0 text-xs text-ink/50">{STAT_LABELS[i]}</span>
+                <input
+                  className={inputClass}
+                  placeholder="+10.000"
+                  value={s.value ?? ""}
+                  onChange={(e) => setArrayItem("stats", i, { value: e.target.value })}
+                />
+                <input
+                  className={inputClass}
+                  placeholder="seguidores"
+                  value={s.label}
+                  onChange={(e) => setArrayItem("stats", i, { label: e.target.value })}
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
-        <Section title="Comunidad (métricas)">
-          {form.stats.map((s, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <span className="w-24 shrink-0 text-xs text-ink/50">{STAT_LABELS[i]}</span>
-              <input
-                className={inputClass}
-                placeholder="+10.000"
-                value={s.value ?? ""}
-                onChange={(e) => setArrayItem("stats", i, { value: e.target.value })}
-              />
-              <input
-                className={inputClass}
-                placeholder="seguidores"
-                value={s.label}
-                onChange={(e) => setArrayItem("stats", i, { label: e.target.value })}
-              />
-            </div>
-          ))}
-        </Section>
+        {activeTab === "contenido" && (
+          <div className="flex flex-col gap-8">
+            <ImageField
+              label="Foto grande (sección Tipos de contenido)"
+              value={form.contentCollabImage}
+              path="site/content-collab"
+              onChange={(contentCollabImage) => setForm((f) => ({ ...f, contentCollabImage }))}
+            />
+            <TextListEditor
+              label="Tipos de contenido"
+              items={form.contentTypes}
+              onChange={(contentTypes) => setForm((f) => ({ ...f, contentTypes }))}
+            />
+            <TextListEditor
+              label="Colaboraciones"
+              items={form.collaborations}
+              onChange={(collaborations) => setForm((f) => ({ ...f, collaborations }))}
+            />
+          </div>
+        )}
 
-        <Section title="Tipos de contenido">
+        {activeTab === "marcas" && (
           <TextListEditor
-            label="Lista"
-            items={form.contentTypes}
-            onChange={(contentTypes) => setForm((f) => ({ ...f, contentTypes }))}
-          />
-        </Section>
-
-        <Section title="Colaboraciones">
-          <TextListEditor
-            label="Lista"
-            items={form.collaborations}
-            onChange={(collaborations) => setForm((f) => ({ ...f, collaborations }))}
-          />
-        </Section>
-
-        <Section title="Marcas con las que trabajó">
-          <TextListEditor
-            label="Marcas"
+            label="Marcas con las que trabajó"
             items={form.brands}
             onChange={(brands) => setForm((f) => ({ ...f, brands }))}
           />
-        </Section>
+        )}
 
-        <Section title="Redes y contacto">
-          <Field label="Instagram (link completo)">
-            <input
-              className={inputClass}
-              value={form.socials.instagram}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, socials: { ...f.socials, instagram: e.target.value } }))
-              }
-            />
-          </Field>
-          <Field label="TikTok (link completo)">
-            <input
-              className={inputClass}
-              value={form.socials.tiktok}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, socials: { ...f.socials, tiktok: e.target.value } }))
-              }
-            />
-          </Field>
-          <Field label="Email de contacto">
-            <input
-              className={inputClass}
-              value={form.socials.email}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, socials: { ...f.socials, email: e.target.value } }))
-              }
-            />
-          </Field>
-        </Section>
+        {activeTab === "contacto" && (
+          <div className="flex flex-col gap-6">
+            <Field label="Instagram (link completo)">
+              <input
+                className={inputClass}
+                value={form.socials.instagram}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, socials: { ...f.socials, instagram: e.target.value } }))
+                }
+              />
+            </Field>
+            <Field label="TikTok (link completo)">
+              <input
+                className={inputClass}
+                value={form.socials.tiktok}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, socials: { ...f.socials, tiktok: e.target.value } }))
+                }
+              />
+            </Field>
+            <Field label="Email de contacto">
+              <input
+                className={inputClass}
+                value={form.socials.email}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, socials: { ...f.socials, email: e.target.value } }))
+                }
+              />
+            </Field>
+          </div>
+        )}
 
-        <section className="rounded-md bg-white/60 p-6">
-          <p className="mb-4 text-sm font-light text-ink/70">
-            Acá se manejan las carpetas de fotos y videos que se ven en la
-            sección "Sobre mí" del sitio (Deporte, Lifestyle, etc.). Cada
-            carpeta nueva que escribas abajo aparece sola como un cuadro más.
-          </p>
-          <GalleryManager />
-        </section>
-      </div>
-
-      <div className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-between bg-ink px-6 py-4 text-white">
-        <span className={`text-xs ${saveError ? "text-red-400" : "text-white/60"}`}>
-          {saveError || (savedAt ? "Guardado ✓" : "Los cambios de texto y fotos se guardan al tocar Guardar.")}
-        </span>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="rounded bg-white px-6 py-2.5 text-sm font-medium text-ink hover:opacity-90 disabled:opacity-50"
-        >
-          {saving ? "Guardando…" : "Guardar cambios"}
-        </button>
+        {activeTab === "galeria" && (
+          <div>
+            <p className="mb-4 text-sm font-light text-ink/70">
+              Acá se manejan las carpetas de fotos y videos que se ven en la
+              sección "Sobre mí" del sitio (Deporte, Lifestyle, etc.).
+            </p>
+            <GalleryManager />
+          </div>
+        )}
       </div>
     </div>
   );
