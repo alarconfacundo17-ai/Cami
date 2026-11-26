@@ -20,18 +20,7 @@ function FolderTile({ folder, tone, onOpen }) {
       className="group relative block aspect-[3/4] w-full text-left"
     >
       {hasStack && (
-        <>
-          <div className="absolute inset-0 -rotate-6 scale-[0.93] overflow-hidden rounded-sm bg-ink/30 transition-transform duration-300 ease-out group-hover:-rotate-9">
-            {coverImage && (
-              <img src={coverImage} alt="" className="h-full w-full object-cover opacity-50" />
-            )}
-          </div>
-          <div className="absolute inset-0 rotate-3 scale-[0.96] overflow-hidden rounded-sm bg-ink/20 transition-transform duration-300 ease-out group-hover:rotate-6">
-            {coverImage && (
-              <img src={coverImage} alt="" className="h-full w-full object-cover opacity-70" />
-            )}
-          </div>
-        </>
+        <div className="absolute -bottom-2.5 -right-2.5 left-1.5 top-1.5 rounded-sm bg-gold/70 shadow-md transition-all duration-300 ease-out group-hover:-bottom-3.5 group-hover:-right-3.5" />
       )}
 
       <PlaceholderPhoto
