@@ -4,12 +4,15 @@
   --font-serif: "Playfair Display", "Georgia", serif;
   --font-sans: "Jost", "Helvetica Neue", Arial, sans-serif;
   --font-hand: "Caveat", cursive;
+  --font-statement: "Anton", "Helvetica Neue", Arial, sans-serif;
 
   --color-ink: #2b2a25;
   --color-ink-light: #3c3a32;
   --color-cream: #f3ece2;
   --color-cream-dark: #e8ddce;
   --color-paper: #faf6f0;
+  --color-gold: #c9974a;
+  --color-gold-light: #e3c17e;
 }
 
 html {
@@ -29,6 +32,11 @@ body {
 
 .font-hand {
   font-family: var(--font-hand);
+}
+
+.font-statement {
+  font-family: var(--font-statement);
+  letter-spacing: 0.01em;
 }
 
 .tracking-label {

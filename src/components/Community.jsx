@@ -30,7 +30,7 @@ export default function Community() {
                   i > 0 ? "sm:border-l sm:border-white/15" : ""
                 } ${href ? "hover:opacity-80" : ""}`}
               >
-                <Icon size={26} strokeWidth={1.25} className="shrink-0" />
+                <Icon size={26} strokeWidth={1.25} className="shrink-0 text-gold-light" />
                 <div>
                   <p className="font-serif-display text-lg leading-none">
                     {value ?? "+X.XXX"}

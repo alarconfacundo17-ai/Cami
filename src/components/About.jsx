@@ -41,7 +41,7 @@ function FolderTile({ folder, tone, onOpen }) {
         imageClassName="transition-transform duration-500 ease-out group-hover:scale-105"
         className="relative aspect-[3/4] rounded-sm shadow-md transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-xl group-active:translate-y-0 group-active:scale-[0.97]"
       >
-        <span className="absolute left-3 top-3 rounded-full bg-black/50 px-2 py-0.5 text-[11px] text-white">
+        <span className="absolute left-3 top-3 rounded-full border border-gold/60 bg-black/50 px-2 py-0.5 text-[11px] font-medium text-gold-light">
           {folder.items.length}
         </span>
       </PlaceholderPhoto>

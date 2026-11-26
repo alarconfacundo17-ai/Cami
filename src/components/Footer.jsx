@@ -1,65 +1,96 @@
-import { Mail, ArrowRight, Music2 } from "lucide-react";
+import { Mail, ArrowUpRight, Music2 } from "lucide-react";
 import { InstagramIcon } from "./doodles";
 import { useSiteContent } from "../siteContent/SiteContentContext";
 
 const currentYear = new Date().getFullYear();
 
+const linkClass =
+  "group flex items-center justify-between gap-6 rounded-full border border-white/20 px-6 py-3.5 text-sm font-light text-white transition-colors hover:border-gold hover:bg-white/5";
+
 export default function Footer() {
   const { content } = useSiteContent();
   const { brands, socials } = content;
+
   return (
     <footer id="contacto" className="scroll-mt-24 bg-ink text-white">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 lg:flex-row lg:items-center lg:justify-between lg:gap-10 lg:px-10">
-        <div>
-          <p className="text-sm font-light text-white/70">Marcas con las que trabajé</p>
-          <ul className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-3">
-            {brands.map((brand) => (
-              <li
-                key={brand}
-                className="text-lg font-semibold uppercase tracking-wide text-white/90"
-              >
-                {brand}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="mx-auto max-w-7xl px-6 pb-16 pt-20 lg:px-10 lg:pb-20 lg:pt-28">
+        <p className="text-xs font-light uppercase tracking-label text-gold-light">
+          Contacto
+        </p>
+        <h2 className="font-statement mt-4 text-6xl leading-[0.95] text-transparent sm:text-7xl lg:text-8xl">
+          <span className="bg-gradient-to-br from-gold-light to-gold bg-clip-text">
+            TRABAJEMOS
+            <br />
+            JUNTOS
+          </span>
+        </h2>
 
-        <a
-          href={`mailto:${socials.email}`}
-          className="group flex w-fit items-center gap-3 rounded-full border border-white/30 px-6 py-3 text-sm font-light text-white transition-colors hover:border-white hover:bg-white/10"
-        >
-          <Mail size={17} strokeWidth={1.5} />
-          Trabajemos juntos
-          <ArrowRight
-            size={16}
-            strokeWidth={1.5}
-            className="transition-transform group-hover:translate-x-1"
-          />
-        </a>
-      </div>
+        <p className="mt-6 max-w-md text-base font-light text-white/70">
+          ¿Tenés una marca, un producto o una idea? Escribime y charlamos.
+        </p>
 
-      <div className="flex flex-col items-center gap-4 border-t border-white/10 px-6 py-5 text-center text-xs font-light text-white/50 lg:flex-row lg:justify-between lg:px-10 lg:text-left">
-        <p>© {currentYear} Camila Zanon — Todos los derechos reservados.</p>
-        <div className="flex items-center gap-4">
+        <div className="mt-10 flex flex-col gap-3 sm:max-w-md">
+          <a href={`mailto:${socials.email}`} className={linkClass}>
+            <span className="flex items-center gap-3">
+              <Mail size={18} strokeWidth={1.5} />
+              {socials.email}
+            </span>
+            <ArrowUpRight
+              size={16}
+              className="shrink-0 text-white/40 transition-colors group-hover:text-gold-light"
+            />
+          </a>
           <a
             href={socials.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Instagram"
-            className="text-white/60 transition-colors hover:text-white"
+            className={linkClass}
           >
-            <InstagramIcon size={18} strokeWidth={1.5} />
+            <span className="flex items-center gap-3">
+              <InstagramIcon size={18} strokeWidth={1.5} />
+              Instagram
+            </span>
+            <ArrowUpRight
+              size={16}
+              className="shrink-0 text-white/40 transition-colors group-hover:text-gold-light"
+            />
           </a>
           <a
             href={socials.tiktok}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="TikTok"
-            className="text-white/60 transition-colors hover:text-white"
+            className={linkClass}
           >
-            <Music2 size={18} strokeWidth={1.5} />
+            <span className="flex items-center gap-3">
+              <Music2 size={18} strokeWidth={1.5} />
+              TikTok
+            </span>
+            <ArrowUpRight
+              size={16}
+              className="shrink-0 text-white/40 transition-colors group-hover:text-gold-light"
+            />
           </a>
         </div>
+      </div>
+
+      <div className="border-t border-white/10 px-6 py-8 lg:px-10">
+        <p className="text-xs font-light uppercase tracking-label text-white/40">
+          Marcas con las que trabajé
+        </p>
+        <ul className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-3">
+          {brands.map((brand) => (
+            <li
+              key={brand}
+              className="text-lg font-semibold uppercase tracking-wide text-white/80"
+            >
+              {brand}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="border-t border-white/10 px-6 py-5 text-center text-xs font-light text-white/50 lg:px-10 lg:text-left">
+        © {currentYear} Camila Zanon — Todos los derechos reservados.
       </div>
     </footer>
   );
