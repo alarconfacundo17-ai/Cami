@@ -20,7 +20,7 @@ function FolderTile({ folder, tone, onOpen }) {
       className="group relative block aspect-[3/4] w-full text-left"
     >
       {hasStack && (
-        <div className="absolute -bottom-2.5 -right-2.5 left-1.5 top-1.5 rounded-sm bg-gold/70 shadow-md transition-all duration-300 ease-out group-hover:-bottom-3.5 group-hover:-right-3.5" />
+        <div className="absolute -bottom-2.5 -right-2.5 left-1.5 top-1.5 rounded-sm bg-[#6b6964] shadow-md transition-all duration-300 ease-out group-hover:-bottom-3.5 group-hover:-right-3.5" />
       )}
 
       <PlaceholderPhoto
