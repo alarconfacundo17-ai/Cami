@@ -7,10 +7,16 @@ import { groupGalleryByCategory } from "../lib/groupGallery";
 
 const SUGGESTED_CATEGORIES = ["Deporte", "Lifestyle", "Gastronomía", "Experiencias"];
 
+// El proyecto de Supabase tiene un límite de tamaño por archivo de 50MB
+// (fijo en el plan gratis). Lo chequeamos antes de intentar subir para
+// avisar al toque, en vez de esperar a que falle en el servidor.
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const SIZE_LIMIT_MESSAGE = "pesa más de 50MB — hay que comprimirlo o recortarlo antes de subir";
+
 function friendlyError(err) {
   const msg = err?.message || "";
   if (/exceeded the maximum allowed size|payload too large|413/i.test(msg)) {
-    return "el archivo pesa demasiado";
+    return SIZE_LIMIT_MESSAGE;
   }
   return msg || "error desconocido";
 }
@@ -22,6 +28,9 @@ function friendlyError(err) {
 async function uploadFiles(files, category, startPosition) {
   const results = await Promise.allSettled(
     files.map(async (file) => {
+      if (file.size > MAX_FILE_SIZE) {
+        throw new Error(SIZE_LIMIT_MESSAGE);
+      }
       if (file.type.startsWith("video")) {
         const { url, posterUrl } = await uploadGalleryVideo(file);
         return { media_type: "video", url, poster_url: posterUrl, category };
@@ -37,7 +46,10 @@ async function uploadFiles(files, category, startPosition) {
     if (result.status === "fulfilled") {
       rows.push({ ...result.value, position: startPosition + rows.length });
     } else {
-      failures.push({ name: files[i].name, reason: friendlyError(result.reason) });
+      const reason = result.reason?.message === SIZE_LIMIT_MESSAGE
+        ? SIZE_LIMIT_MESSAGE
+        : friendlyError(result.reason);
+      failures.push({ name: files[i].name, reason });
     }
   });
   return { rows, failures };

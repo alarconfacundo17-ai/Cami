@@ -82,11 +82,11 @@ create policy "media is editable by logged-in admin"
   using (bucket_id = 'media')
   with check (bucket_id = 'media');
 
--- Los videos de celular pueden pesar varios cientos de MB. Por defecto el
--- bucket no tiene límite propio, pero el proyecto de Supabase sí tiene un
--- límite general (Dashboard → Project Settings → Storage → "Upload file
--- size limit", 50MB en el plan gratis). Esta línea solo sube el límite del
--- bucket; si el límite general del proyecto es menor, ese es el que manda,
--- así que conviene revisarlo y subirlo ahí también si hace falta.
-update storage.buckets set file_size_limit = 524288000 -- 500MB
+-- Los videos de celular pueden pesar varios cientos de MB. Esta línea sube
+-- el límite propio del bucket, pero el proyecto de Supabase tiene además un
+-- límite general (Dashboard → Storage → Settings → "Global file size
+-- limit") que manda por encima de este si es menor. En el plan gratis ese
+-- límite general es fijo en 50MB y no se puede subir sin pasar a Pro, así
+-- que en la práctica el tope real hoy es 50MB por archivo.
+update storage.buckets set file_size_limit = 524288000 -- 500MB (por si en algún momento se pasa a un plan pago)
 where id = 'media';
