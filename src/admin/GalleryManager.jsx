@@ -7,19 +7,55 @@ import { groupGalleryByCategory } from "../lib/groupGallery";
 
 const SUGGESTED_CATEGORIES = ["Deporte", "Lifestyle", "Gastronomía", "Experiencias"];
 
+function friendlyError(err) {
+  const msg = err?.message || "";
+  if (/exceeded the maximum allowed size|payload too large|413/i.test(msg)) {
+    return "el archivo pesa demasiado";
+  }
+  return msg || "error desconocido";
+}
+
 // Sube todos los archivos en paralelo (no uno por uno), así elegir varias
-// fotos/videos juntos no suma sus tiempos de espera.
+// fotos/videos juntos no suma sus tiempos de espera. Si alguno falla (por
+// ejemplo un video muy pesado) no se pierden los demás: cada archivo se
+// resuelve por separado y los que sí se pudieron subir se guardan igual.
 async function uploadFiles(files, category, startPosition) {
-  return Promise.all(
-    files.map(async (file, i) => {
-      const position = startPosition + i;
+  const results = await Promise.allSettled(
+    files.map(async (file) => {
       if (file.type.startsWith("video")) {
         const { url, posterUrl } = await uploadGalleryVideo(file);
-        return { media_type: "video", url, poster_url: posterUrl, category, position };
+        return { media_type: "video", url, poster_url: posterUrl, category };
       }
       const { url } = await uploadGalleryFile(file);
-      return { media_type: "image", url, category, position };
+      return { media_type: "image", url, category };
     }),
+  );
+
+  const rows = [];
+  const failures = [];
+  results.forEach((result, i) => {
+    if (result.status === "fulfilled") {
+      rows.push({ ...result.value, position: startPosition + rows.length });
+    } else {
+      failures.push({ name: files[i].name, reason: friendlyError(result.reason) });
+    }
+  });
+  return { rows, failures };
+}
+
+function UploadErrors({ failures }) {
+  if (!failures || failures.length === 0) return null;
+  return (
+    <div className="mt-2 rounded border border-red-200 bg-red-50 p-2 text-[11px] text-red-700">
+      <p className="font-medium">No se pudieron subir {failures.length === 1 ? "este archivo" : "estos archivos"}:</p>
+      <ul className="mt-1 list-disc pl-4">
+        {failures.map((f, i) => (
+          <li key={i}>
+            {f.name} — {f.reason}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -30,7 +66,11 @@ function Thumb({ item, onDelete }) {
     <div className="group relative aspect-square overflow-hidden rounded bg-ink/10">
       {item.media_type === "video" ? (
         <>
-          <img src={item.poster_url} alt="" className="h-full w-full object-cover" />
+          {item.poster_url ? (
+            <img src={item.poster_url} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="h-full w-full bg-ink/20" />
+          )}
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-ink">
               <Play size={13} fill="currentColor" className="ml-0.5" />
@@ -82,21 +122,31 @@ function FolderBlock({ folder, onRefresh }) {
   const [nameInput, setNameInput] = useState(folder.label);
   const [uploading, setUploading] = useState(false);
   const [deletingFolder, setDeletingFolder] = useState(false);
+  const [failures, setFailures] = useState([]);
 
   const handleAddFiles = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
     setUploading(true);
+    setFailures([]);
     try {
       const start = folder.items.length
         ? Math.max(...folder.items.map((g) => g.position)) + 1
         : 0;
-      const rows = await uploadFiles(files, folder.label === "Sin carpeta" ? null : folder.label, start);
-      const { error } = await supabase.from("gallery_items").insert(rows);
-      if (error) throw error;
-      await onRefresh();
+      const { rows, failures: uploadFailures } = await uploadFiles(
+        files,
+        folder.label === "Sin carpeta" ? null : folder.label,
+        start,
+      );
+      if (rows.length > 0) {
+        const { error } = await supabase.from("gallery_items").insert(rows);
+        if (error) throw error;
+        await onRefresh();
+      }
+      setFailures(uploadFailures);
     } catch (err) {
       console.error(err);
+      setFailures([{ name: "", reason: friendlyError(err) }]);
     }
     setUploading(false);
     e.target.value = "";
@@ -210,6 +260,8 @@ function FolderBlock({ folder, onRefresh }) {
           <Thumb key={item.id} item={item} onDelete={() => deleteItem(item.id)} />
         ))}
       </div>
+
+      <UploadErrors failures={failures} />
     </div>
   );
 }
@@ -231,15 +283,23 @@ export default function GalleryManager() {
     setError("");
     setUploading(true);
     try {
-      const rows = await uploadFiles(files, name, 0);
-      const { error: insertError } = await supabase.from("gallery_items").insert(rows);
-      if (insertError) throw insertError;
-      await refresh();
-      setCreating(false);
-      setNewName("");
+      const { rows, failures } = await uploadFiles(files, name, 0);
+      if (rows.length > 0) {
+        const { error: insertError } = await supabase.from("gallery_items").insert(rows);
+        if (insertError) throw insertError;
+        await refresh();
+        setCreating(false);
+        setNewName("");
+      }
+      if (failures.length > 0) {
+        setError(
+          `No se pudieron subir ${failures.length === 1 ? "este archivo" : "estos archivos"}: ` +
+            failures.map((f) => `${f.name} (${f.reason})`).join(", "),
+        );
+      }
     } catch (err) {
       console.error(err);
-      setError("No se pudo crear la carpeta.");
+      setError("No se pudo crear la carpeta: " + friendlyError(err));
     }
     setUploading(false);
     e.target.value = "";
