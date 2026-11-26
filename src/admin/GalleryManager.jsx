@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 import { uploadGalleryFile, uploadGalleryVideo } from "./storage";
 import { useSiteContent } from "../siteContent/SiteContentContext";
 import { groupGalleryByCategory } from "../lib/groupGallery";
+import UploadIssueModal from "./UploadIssueModal";
 
 const SUGGESTED_CATEGORIES = ["Deporte", "Lifestyle", "Gastronomía", "Experiencias"];
 
@@ -46,29 +47,11 @@ async function uploadFiles(files, category, startPosition) {
     if (result.status === "fulfilled") {
       rows.push({ ...result.value, position: startPosition + rows.length });
     } else {
-      const reason = result.reason?.message === SIZE_LIMIT_MESSAGE
-        ? SIZE_LIMIT_MESSAGE
-        : friendlyError(result.reason);
-      failures.push({ name: files[i].name, reason });
+      const reason = friendlyError(result.reason);
+      failures.push({ name: files[i].name, reason, isSizeLimit: reason === SIZE_LIMIT_MESSAGE });
     }
   });
   return { rows, failures };
-}
-
-function UploadErrors({ failures }) {
-  if (!failures || failures.length === 0) return null;
-  return (
-    <div className="mt-2 rounded border border-red-200 bg-red-50 p-2 text-[11px] text-red-700">
-      <p className="font-medium">No se pudieron subir {failures.length === 1 ? "este archivo" : "estos archivos"}:</p>
-      <ul className="mt-1 list-disc pl-4">
-        {failures.map((f, i) => (
-          <li key={i}>
-            {f.name} — {f.reason}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 }
 
 function Thumb({ item, onDelete }) {
@@ -129,23 +112,21 @@ function Thumb({ item, onDelete }) {
   );
 }
 
-function FolderBlock({ folder, onRefresh }) {
+function FolderBlock({ folder, onRefresh, onUploadFailures }) {
   const [renaming, setRenaming] = useState(false);
   const [nameInput, setNameInput] = useState(folder.label);
   const [uploading, setUploading] = useState(false);
   const [deletingFolder, setDeletingFolder] = useState(false);
-  const [failures, setFailures] = useState([]);
 
   const handleAddFiles = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
     setUploading(true);
-    setFailures([]);
     try {
       const start = folder.items.length
         ? Math.max(...folder.items.map((g) => g.position)) + 1
         : 0;
-      const { rows, failures: uploadFailures } = await uploadFiles(
+      const { rows, failures } = await uploadFiles(
         files,
         folder.label === "Sin carpeta" ? null : folder.label,
         start,
@@ -155,10 +136,10 @@ function FolderBlock({ folder, onRefresh }) {
         if (error) throw error;
         await onRefresh();
       }
-      setFailures(uploadFailures);
+      if (failures.length > 0) onUploadFailures(failures);
     } catch (err) {
       console.error(err);
-      setFailures([{ name: "", reason: friendlyError(err) }]);
+      onUploadFailures([{ name: "", reason: friendlyError(err) }]);
     }
     setUploading(false);
     e.target.value = "";
@@ -272,8 +253,6 @@ function FolderBlock({ folder, onRefresh }) {
           <Thumb key={item.id} item={item} onDelete={() => deleteItem(item.id)} />
         ))}
       </div>
-
-      <UploadErrors failures={failures} />
     </div>
   );
 }
@@ -283,7 +262,7 @@ export default function GalleryManager() {
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState("");
+  const [issue, setIssue] = useState(null);
 
   const folders = useMemo(() => groupGalleryByCategory(gallery), [gallery]);
   const existingNames = useMemo(() => folders.map((f) => f.label), [folders]);
@@ -292,7 +271,6 @@ export default function GalleryManager() {
     const files = Array.from(e.target.files || []);
     const name = newName.trim();
     if (files.length === 0 || !name) return;
-    setError("");
     setUploading(true);
     try {
       const { rows, failures } = await uploadFiles(files, name, 0);
@@ -303,15 +281,10 @@ export default function GalleryManager() {
         setCreating(false);
         setNewName("");
       }
-      if (failures.length > 0) {
-        setError(
-          `No se pudieron subir ${failures.length === 1 ? "este archivo" : "estos archivos"}: ` +
-            failures.map((f) => `${f.name} (${f.reason})`).join(", "),
-        );
-      }
+      if (failures.length > 0) setIssue(failures);
     } catch (err) {
       console.error(err);
-      setError("No se pudo crear la carpeta: " + friendlyError(err));
+      setIssue([{ name: "", reason: friendlyError(err) }]);
     }
     setUploading(false);
     e.target.value = "";
@@ -320,7 +293,7 @@ export default function GalleryManager() {
   return (
     <div className="flex flex-col gap-4">
       {folders.map((folder) => (
-        <FolderBlock key={folder.label} folder={folder} onRefresh={refresh} />
+        <FolderBlock key={folder.label} folder={folder} onRefresh={refresh} onUploadFailures={setIssue} />
       ))}
 
       <div className="rounded-md border-2 border-dashed border-ink/20 p-4">
@@ -380,7 +353,7 @@ export default function GalleryManager() {
         )}
       </div>
 
-      {error && <p className="text-xs text-red-700">{error}</p>}
+      <UploadIssueModal failures={issue} onClose={() => setIssue(null)} />
     </div>
   );
 }
