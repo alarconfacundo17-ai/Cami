@@ -32,16 +32,25 @@ export async function uploadGalleryFile(file) {
 }
 
 // Toma un frame de adentro del video (no el primero, que suele salir
-// negro) y lo devuelve como imagen chica, para usar de portada.
+// negro) y lo devuelve como imagen chica, para usar de portada. El
+// elemento <video> se agrega (oculto) a la página porque en varios
+// navegadores de celular (sobre todo iOS) un <video> que nunca se insertó
+// en el documento no dispara sus eventos de carga, y la promesa quedaría
+// esperando para siempre.
 function captureVideoFrame(file, maxDimension = 1280) {
   return new Promise((resolve, reject) => {
     const objectUrl = URL.createObjectURL(file);
     const video = document.createElement("video");
-    video.src = objectUrl;
     video.muted = true;
     video.playsInline = true;
+    video.preload = "auto";
+    video.style.cssText = "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;";
+    document.body.appendChild(video);
 
-    const cleanup = () => URL.revokeObjectURL(objectUrl);
+    const cleanup = () => {
+      URL.revokeObjectURL(objectUrl);
+      video.remove();
+    };
 
     video.addEventListener("loadeddata", () => {
       video.currentTime = Math.min(0.5, (video.duration || 1) / 4);
@@ -79,29 +88,49 @@ function captureVideoFrame(file, maxDimension = 1280) {
       cleanup();
       reject(new Error("No se pudo leer el video"));
     });
+
+    video.src = objectUrl;
   });
 }
 
+// Por las dudas de que algún navegador tampoco dispare los eventos de
+// arriba, esto pone un límite de tiempo: si a los 8 segundos no hay
+// portada, seguimos sin ella en vez de quedarnos esperando para siempre.
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve(null), ms)),
+  ]);
+}
+
 // Sube un video de galería junto con una portada generada automáticamente
-// a partir de un frame del propio video. La portada se genera localmente
-// (no necesita red) y se sube en paralelo con el video, no después, para
-// no sumar tiempo de espera extra. Si la portada falla, el video se sube
-// igual (no es crítico).
+// a partir de un frame del propio video. El video se sube igual aunque la
+// portada falle o tarde demasiado (no es crítico).
 export async function uploadGalleryVideo(file) {
   const id = crypto.randomUUID();
   const ext = file.name.split(".").pop();
 
-  let posterBlob = null;
-  try {
-    posterBlob = await captureVideoFrame(file);
-  } catch (err) {
-    console.error("No se pudo generar la portada del video:", err);
-  }
+  const posterPromise = withTimeout(
+    captureVideoFrame(file).catch((err) => {
+      console.error("No se pudo generar la portada del video:", err);
+      return null;
+    }),
+    8000,
+  );
 
-  const [url, posterUrl] = await Promise.all([
+  const [url, posterBlob] = await Promise.all([
     uploadRaw(file, `gallery/${id}.${ext}`),
-    posterBlob ? uploadRaw(posterBlob, `gallery/${id}-poster.jpg`, "image/jpeg") : Promise.resolve(null),
+    posterPromise,
   ]);
+
+  let posterUrl = null;
+  if (posterBlob) {
+    try {
+      posterUrl = await uploadRaw(posterBlob, `gallery/${id}-poster.jpg`, "image/jpeg");
+    } catch (err) {
+      console.error("No se pudo subir la portada del video:", err);
+    }
+  }
 
   return { url, posterUrl };
 }
