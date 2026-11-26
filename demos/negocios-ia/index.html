@@ -90,10 +90,10 @@ details p{margin:10px 0 0;color:var(--mute);font-size:15px}
   <h1>Tu negocio vendiendo <em>más</em> con IA.</h1>
   <p class="sub">Te armamos la web, los turnos online y el contenido para que te encuentren y te reserven sin que tengas que estar pegado al celular.</p>
   <div class="row">
-    <a class="btn wa" href="https://wa.me/5491100000000?text=Hola!%20Vengo%20de%20Negocios%20%2B%20IA%20y%20quiero%20info" target="_blank" rel="noopener">Escribinos por WhatsApp →</a>
+    <a class="btn" href="https://ig.me/m/negociomasia" target="_blank" rel="noopener">Mandanos un mensaje por Instagram →</a>
     <a class="btn ghost" href="#precios">Ver servicios y precios</a>
   </div>
-  <p class="num">WhatsApp: <code id="tel">+54 9 11 0000-0000</code><button type="button" id="copy">Copiar</button></p>
+  <p class="num">Instagram: <code>@negociomasia</code> · respondemos el mismo día</p>
 </div></header>
 
 <section class="prices" id="precios"><div class="wrap">
@@ -117,7 +117,7 @@ details p{margin:10px 0 0;color:var(--mute);font-size:15px}
   <p class="lab">Cómo trabajamos</p>
   <h2>Tres pasos y listo</h2>
   <ol>
-    <li><div><b>Nos contás de tu negocio</b><span>Por WhatsApp: qué vendés, a quién y qué te gustaría mejorar.</span></div></li>
+    <li><div><b>Nos contás de tu negocio</b><span>Por mensaje directo en Instagram: qué vendés, a quién y qué te gustaría mejorar.</span></div></li>
     <li><div><b>Te mandamos la propuesta</b><span>Qué incluye, cómo queda y cuánto sale. Sin compromiso.</span></div></li>
     <li><div><b>Arrancamos</b><span>50% para empezar y 50% cuando lo entregamos funcionando.</span></div></li>
   </ol>
@@ -136,7 +136,7 @@ details p{margin:10px 0 0;color:var(--mute);font-size:15px}
 <footer class="end"><div class="wrap">
   <p class="lab">¿Hablamos?</p>
   <h2>Contanos de tu negocio y te decimos qué te conviene.</h2>
-  <a class="btn wa" href="https://wa.me/5491100000000?text=Hola!%20Vengo%20de%20Negocios%20%2B%20IA%20y%20quiero%20info" target="_blank" rel="noopener">Escribinos por WhatsApp →</a>
+  <a class="btn" href="https://ig.me/m/negociomasia" target="_blank" rel="noopener">Mandanos un mensaje por Instagram →</a>
   <div class="social">
     <a href="https://www.instagram.com/negociomasia/" target="_blank" rel="noopener">Instagram</a>
     <a href="https://www.tiktok.com/@negociosmasia" target="_blank" rel="noopener">TikTok</a>
@@ -145,11 +145,3 @@ details p{margin:10px 0 0;color:var(--mute);font-size:15px}
   <p class="foot">Negocios + IA · Ideas cada semana para que tu negocio venda más</p>
 </div></footer>
 
-<script>
-document.getElementById('copy').addEventListener('click', function(){
-  var b=this, t=document.getElementById('tel').textContent;
-  function ok(){b.textContent='Copiado';setTimeout(function(){b.textContent='Copiar'},1500)}
-  function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById('tel'));var s=getSelection();s.removeAllRanges();s.addRange(r);}
-  try{navigator.clipboard.writeText(t).then(ok,sel)}catch(e){sel()}
-});
-</script>
