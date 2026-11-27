@@ -85,6 +85,15 @@ body {
   }
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .animate-overlay-in {
   animation: overlay-in 0.25s ease-out;
 }
@@ -101,11 +110,16 @@ body {
   animation: slide-in-left 0.25s ease-out;
 }
 
+.animate-marquee {
+  animation: marquee 24s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-overlay-in,
   .animate-panel-in,
   .animate-slide-in-right,
-  .animate-slide-in-left {
+  .animate-slide-in-left,
+  .animate-marquee {
     animation: none;
   }
 }

@@ -9,7 +9,7 @@ const linkClass =
 
 export default function Footer() {
   const { content } = useSiteContent();
-  const { brands, socials } = content;
+  const { socials } = content;
 
   return (
     <footer id="contacto" className="scroll-mt-24 bg-ink text-white">
@@ -71,22 +71,6 @@ export default function Footer() {
             />
           </a>
         </div>
-      </div>
-
-      <div className="border-t border-white/10 px-6 py-8 lg:px-10">
-        <p className="text-xs font-light uppercase tracking-label text-white/40">
-          Marcas con las que trabajé
-        </p>
-        <ul className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-3">
-          {brands.map((brand) => (
-            <li
-              key={brand}
-              className="text-lg font-semibold uppercase tracking-wide text-white/80"
-            >
-              {brand}
-            </li>
-          ))}
-        </ul>
       </div>
 
       <div className="border-t border-white/10 px-6 py-5 text-center text-xs font-light text-white/50 lg:px-10 lg:text-left">
