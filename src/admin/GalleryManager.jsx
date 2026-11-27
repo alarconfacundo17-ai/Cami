@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FolderPlus, ImagePlus, Pencil, Trash2, Play, Check, X } from "lucide-react";
+import { FolderPlus, ImagePlus, Pencil, Trash2, Play, Check, X, Star } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { uploadGalleryFile, uploadGalleryVideo } from "./storage";
 import { useSiteContent } from "../siteContent/SiteContentContext";
@@ -79,7 +79,7 @@ function UploadProgressList({ items }) {
   );
 }
 
-function Thumb({ item, onDelete }) {
+function Thumb({ item, isCover, onDelete, onSetCover }) {
   const [confirming, setConfirming] = useState(false);
 
   return (
@@ -99,6 +99,13 @@ function Thumb({ item, onDelete }) {
         </>
       ) : (
         <img src={item.url} alt="" className="h-full w-full object-cover" />
+      )}
+
+      {isCover && (
+        <span className="absolute left-1 top-1 flex items-center gap-1 rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-medium text-ink">
+          <Star size={10} fill="currentColor" />
+          Portada
+        </span>
       )}
 
       {confirming ? (
@@ -124,14 +131,27 @@ function Thumb({ item, onDelete }) {
           </div>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => setConfirming(true)}
-          className="absolute right-1 top-1 rounded-full bg-black/60 p-1.5 text-white"
-          aria-label="Borrar"
-        >
-          <Trash2 size={13} />
-        </button>
+        <div className="absolute right-1 top-1 flex gap-1">
+          {!isCover && (
+            <button
+              type="button"
+              onClick={onSetCover}
+              className="rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80"
+              aria-label="Usar como portada"
+              title="Usar como portada"
+            >
+              <Star size={13} />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setConfirming(true)}
+            className="rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80"
+            aria-label="Borrar"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
       )}
     </div>
   );
@@ -185,6 +205,18 @@ function FolderBlock({ folder, onRefresh, onUploadFailures }) {
       .from("gallery_items")
       .update({ category: newName })
       .eq("category", folder.label === "Sin carpeta" ? null : folder.label);
+    await onRefresh();
+  };
+
+  // Manda el ítem elegido al frente de la carpeta (posición más baja que
+  // todas las demás), así es el primero que se ve — sin depender de cuál
+  // haya sido el primero en subirse.
+  const setCover = async (id) => {
+    const minPosition = Math.min(0, ...folder.items.map((g) => g.position));
+    await supabase
+      .from("gallery_items")
+      .update({ position: minPosition - 1 })
+      .eq("id", id);
     await onRefresh();
   };
 
@@ -281,8 +313,14 @@ function FolderBlock({ folder, onRefresh, onUploadFailures }) {
       </div>
 
       <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-5">
-        {folder.items.map((item) => (
-          <Thumb key={item.id} item={item} onDelete={() => deleteItem(item.id)} />
+        {folder.items.map((item, i) => (
+          <Thumb
+            key={item.id}
+            item={item}
+            isCover={i === 0}
+            onDelete={() => deleteItem(item.id)}
+            onSetCover={() => setCover(item.id)}
+          />
         ))}
       </div>
 
