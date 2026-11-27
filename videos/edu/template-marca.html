@@ -83,7 +83,13 @@ const fmtMoney = v => 'US$ ' + Math.round(v).toLocaleString('es-AR');
 const fmtTimer = s => { s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return [h,m,x].map(n=>String(n).padStart(2,'0')).join(':'); };
 // --- Nego y piezas de la tanda 4 ---
 const G='#3DDC84', GD='#1E7B55', BONE='#F2F0E9', INK='#0E1A15', CORAL='#FF5A3C';
-function nego(parent,pose,x,y,h,a,sound=true){ const e=el(`<img class="abs" src="../../../marca/mascota/${pose}.png" style="left:${x}px; top:${y}px; height:${h}px; filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))">`,parent); pop(e,a,sound&&a>0); anim.push(t=>{ e.style.translate=`0 ${Math.sin(t*2.4)*8}px`; }); return e; }
+function nego(parent,pose,x,y,h,a,sound=true){ const e=el(`<img class="abs" src="../../../marca/mascota/${pose}.png" style="left:${x}px; top:${y}px; height:${h}px; transform-origin:50% 100%; filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))">`,parent); pop(e,a,sound&&a>0);
+  // Nego "vivo": se balancea, respira y rebota con cada palabra (como si hablara)
+  const ph = x*0.013;
+  anim.push(t=>{ let k=0; for(const [,ws] of W){ const d=t-ws; if(d>=0 && d<0.3) k=Math.max(k, Math.exp(-d*11)); }
+    const sway=Math.sin(t*1.9+ph)*3, bob=Math.sin(t*2.4+ph)*9, br=Math.sin(t*3.1+ph)*0.012;
+    e.style.rotate=`${sway + k*2}deg`; e.style.translate=`0 ${bob - k*16}px`; e.style.scale=`${1-0.02*k+br} ${1+0.045*k+br}`; });
+  return e; }
 function head(parent, html, top, a, size=110, color=BONE, sound=true){ return big(parent, `<div style="font-weight:900; font-size:${size}px; line-height:1.03; letter-spacing:-3px; color:${color}; text-align:center; text-wrap:balance">${html}</div>`, `left:60px; width:960px; top:${top}px`, a, sound&&a>0); }
 function tag(text, bg=G, fg=INK){ return `<span style="background:${bg}; color:${fg}; padding:0 .18em; border-radius:.12em">${text}</span>`; }
 function row(parent, icon, text, y, a, color=INK, bg='#fff'){ return big(parent, `<div style="display:flex; align-items:center; gap:30px; background:${bg}; border-radius:28px; padding:22px 34px; box-shadow:0 14px 30px rgba(14,26,21,.16)"><div style="font-size:76px; line-height:1">${icon}</div><div style="font-weight:800; font-size:52px; color:${color}; line-height:1.1">${text}</div></div>`, `left:110px; width:860px; top:${y}px`, a); }
