@@ -1,0 +1,5 @@
+Así deja una peluquería de contestar turnos a mano.
+Antes: cincuenta mensajes por día. ¿Tienes hora? ¿Y a las cinco?
+Ahora: un link. El cliente elige día y hora, y le llega el recordatorio.
+Menos mensajes, y menos gente que falta.
+¿Tú cómo das los turnos?

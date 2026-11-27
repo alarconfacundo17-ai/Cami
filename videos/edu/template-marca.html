@@ -81,7 +81,17 @@ function big(parent, html, css, a, sound=true){ const e=el(`<div class="abs" sty
 function salesLabel(txt){ document.querySelector('#sales .lab span').textContent=txt; }
 const fmtMoney = v => 'US$ ' + Math.round(v).toLocaleString('es-AR');
 const fmtTimer = s => { s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return [h,m,x].map(n=>String(n).padStart(2,'0')).join(':'); };
-window.API = { W, w, el, pop, fadeIn, layer, bgAt, phone, bubble, stamp, sales, captions, anim, eo, back, clamp, counter, card, big, salesLabel, fmtMoney, fmtTimer };
+// --- Nego y piezas de la tanda 4 ---
+const G='#3DDC84', GD='#1E7B55', BONE='#F2F0E9', INK='#0E1A15', CORAL='#FF5A3C';
+function nego(parent,pose,x,y,h,a,sound=true){ const e=el(`<img class="abs" src="../../../marca/mascota/${pose}.png" style="left:${x}px; top:${y}px; height:${h}px; filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))">`,parent); pop(e,a,sound&&a>0); anim.push(t=>{ e.style.translate=`0 ${Math.sin(t*2.4)*8}px`; }); return e; }
+function head(parent, html, top, a, size=110, color=BONE, sound=true){ return big(parent, `<div style="font-weight:900; font-size:${size}px; line-height:1.03; letter-spacing:-3px; color:${color}; text-align:center; text-wrap:balance">${html}</div>`, `left:60px; width:960px; top:${top}px`, a, sound&&a>0); }
+function tag(text, bg=G, fg=INK){ return `<span style="background:${bg}; color:${fg}; padding:0 .18em; border-radius:.12em">${text}</span>`; }
+function row(parent, icon, text, y, a, color=INK, bg='#fff'){ return big(parent, `<div style="display:flex; align-items:center; gap:30px; background:${bg}; border-radius:28px; padding:22px 34px; box-shadow:0 14px 30px rgba(14,26,21,.16)"><div style="font-size:76px; line-height:1">${icon}</div><div style="font-weight:800; font-size:52px; color:${color}; line-height:1.1">${text}</div></div>`, `left:110px; width:860px; top:${y}px`, a); }
+function ask(parent, q, opts, a, dark=true){ const c = dark ? BONE : INK;
+  head(parent, q, 330, a, 104, c);
+  opts.forEach((o,i)=> big(parent, `<div style="background:${i? CORAL : G}; color:${i? '#fff' : INK}; font-weight:900; font-size:50px; border-radius:24px; padding:22px 26px; text-align:center">${o}</div>`, `left:${opts.length>2? 70 : 90}px; width:${opts.length>2? 600 : 560}px; top:${640+i*150}px`, a+0.35+i*0.2));
+  nego(parent,'pulgar',620,720,560,a+0.2); }
+window.API = { nego, head, tag, row, ask, G, GD, BONE, INK, CORAL, W, w, el, pop, fadeIn, layer, bgAt, phone, bubble, stamp, sales, captions, anim, eo, back, clamp, counter, card, big, salesLabel, fmtMoney, fmtTimer };
 window.render = t => anim.forEach(f=>f(t));
 </script>
 <script src="data.js"></script>

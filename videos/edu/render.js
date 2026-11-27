@@ -19,6 +19,7 @@ const fs = require('fs'), path = require('path');
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('file://' + path.join(dir, 'index.html'));
   await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => Promise.all([...document.images].map(i => i.complete ? 1 : new Promise(r => { i.onload = i.onerror = r; }))));
   if (errors.length) { console.error('Error en la página:', errors); process.exit(1); }
   const dur = await page.evaluate(() => window.DURATION);
   const pops = await page.evaluate(() => window.POPS);
