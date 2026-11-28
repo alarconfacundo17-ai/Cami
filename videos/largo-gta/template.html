@@ -1,0 +1,99 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Video largo horizontal (1920x1080), estilo Negocios + IA. Escenas en data.js (window.BEATS), tiempos en words.js. -->
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1920px; height:1080px; overflow:hidden; font-family:Inter, sans-serif; }
+  #bg { position:absolute; inset:0; background:#0E1A15; }
+  .abs { position:absolute; }
+  .layer { position:absolute; inset:0; opacity:0; }
+  .mono { font-family:'JetBrains Mono',monospace; font-weight:700; letter-spacing:4px; }
+  .card { background:#fff; border-radius:28px; box-shadow:0 20px 44px rgba(14,26,21,.18); padding:34px; color:#0E1A15; }
+  .pill { display:inline-block; padding:6px 16px; border-radius:10px; }
+  #cap { position:absolute; left:80px; width:1300px; top:905px; text-align:center; font-weight:900; font-size:54px; line-height:1.2; letter-spacing:-1px; }
+  #cap .w { display:inline-block; margin:0 .14em; }
+  #cap .box { display:inline-block; padding:12px 26px; border-radius:14px; background:rgba(14,26,21,.92); color:#fff; }
+  #cap .k { background:#3DDC84; color:#0E1A15; padding:0 10px; border-radius:8px; }
+  #chip { position:absolute; right:60px; top:48px; display:flex; align-items:center; gap:18px; }
+  #dots i { display:inline-block; width:18px; height:18px; border-radius:50%; margin-left:8px; background:#2b4237; }
+  #dots i.on { background:#3DDC84; }
+</style></head>
+<body>
+<div id="bg"></div>
+<div id="stage"></div>
+<div class="abs" style="left:60px; top:44px; display:flex; align-items:center; gap:16px"><svg width="56" height="56" viewBox="0 0 300 300"><circle cx="150" cy="150" r="150" fill="#0E1A15"/><path d="M60 200 L125 135 L165 175 L240 100" fill="none" stroke="#3DDC84" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><path d="M190 100 H240 V150" fill="none" stroke="#3DDC84" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="brand" class="mono" style="font-size:28px">NEGOCIOS + IA</span></div>
+<div id="chip"><span id="chipt" class="mono" style="font-size:24px"></span><span id="dots"></span></div>
+<img id="nego" class="abs" style="left:1450px; top:470px; height:560px; transform-origin:50% 100%; filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))" src="../../marca/mascota/saluda.png">
+<div id="cap"></div>
+<script src="words.js"></script>
+<script src="secs.js"></script>
+<script src="data.js"></script>
+<script>
+const W=window.WORDS, G='#3DDC84', GD='#1E7B55', BONE='#F2F0E9', INK='#0E1A15', CORAL='#FF5A3C';
+const clamp=x=>Math.max(0,Math.min(1,x)), eo=(t,a,d=0.35)=>{const x=clamp((t-a)/d); return 1-Math.pow(1-x,3);};
+const back=(t,a,d=0.5)=>{const x=clamp((t-a)/d); const c=2.2; return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2);};
+const anim=[]; window.POPS=[]; window.WHOOSH=[];
+const norm=s=>s.toLowerCase().replace(/[.,:;!?¿¡"“”…()]/g,'');
+// A(sección, palabra, ocurrencia): tiempo en que se dice esa palabra
+function A(s, word, occ=1){ let n=0; for(const [w,t,sec] of W){ if(sec===s && norm(w)===norm(word)){ if(++n===occ) return t; } } throw new Error('ancla no encontrada: '+s+' '+word+' '+occ); }
+function at(x){ return typeof x==='number' ? x : A(...x); }
+function el(html,parent){ const d=document.createElement('div'); d.innerHTML=html.trim(); const e=d.firstChild; (parent||document.getElementById('stage')).appendChild(e); return e; }
+function pop(e,a,sound=true){ anim.push(t=>{ e.style.opacity=clamp((t-a)/0.12); e.style.transform=`scale(${Math.max(0,back(t,a))})`; }); if(sound) POPS.push(a); }
+function fadeIn(e,a,d=0.3){ anim.push(t=>{ e.style.opacity=eo(t,a,d); }); }
+
+const TITLES=['El récord','La espera vende','Pocos adelantos, pero muy buenos','Una fecha marcada','Cobra antes de lanzar','Ofrece siempre una opción cara','Que tus clientes hablen por ti','Mejor tarde que mal','Resumen'];
+const B = window.BEATS.map(b=>({...b, t:at(b.at)})).sort((x,y)=>x.t-y.t);
+B.forEach((b,i)=>{ b.end = i<B.length-1 ? B[i+1].t : 1e9; });
+
+// colores por escena
+anim.push(t=>{ let b=B[0]; for(const x of B) if(t>=x.t-0.05) b=x; const light=b.bg==='light';
+  document.getElementById('bg').style.background = light ? BONE : INK;
+  document.getElementById('brand').style.color = light ? INK : BONE;
+  document.getElementById('chipt').style.color = light ? GD : G;
+  const nego=document.getElementById('nego'); const pose=b.nego||'senala'; if(!nego.src.endsWith(pose+'.png')) nego.src=`../../marca/mascota/${pose}.png`;
+  nego.style.opacity = b.nonego ? 0 : 1; });
+// capítulo + puntos de lecciones
+const dots=document.getElementById('dots'); for(let i=1;i<=7;i++) dots.appendChild(el('<i></i>',dots));
+anim.push(t=>{ let s=1; SECS.forEach((x,i)=>{ if(t>=x-0.01) s=i+1; }); document.getElementById('chipt').textContent = (s>=2&&s<=8) ? `LECCIÓN ${s-1} · ${TITLES[s-1].toUpperCase()}` : TITLES[s-1].toUpperCase();
+  [...dots.children].forEach((d,i)=>d.className = (s>=2 && i<s-1) || s===9 ? 'on' : ''); });
+// Nego vivo: balanceo + rebote con cada palabra
+anim.push(t=>{ const e=document.getElementById('nego'); let k=0; for(const [,ws] of W){ const d=t-ws; if(d>=0&&d<0.3) k=Math.max(k,Math.exp(-d*11)); }
+  e.style.rotate=`${Math.sin(t*1.9)*3+k*2}deg`; e.style.translate=`0 ${Math.sin(t*2.4)*9-k*14}px`; const br=Math.sin(t*3.1)*0.012; e.style.scale=`${1-0.02*k+br} ${1+0.04*k+br}`; });
+
+// subtítulos (hasta 5 palabras)
+(function(){ const groups=[]; let g=[]; W.forEach((x,i)=>{ g.push(i); if(/[.,:;?!…"]$/.test(x[0])||g.length>=5){ groups.push(g); g=[]; } }); if(g.length) groups.push(g);
+  const C=document.getElementById('cap'); const KEY=new Set((window.KEYS||[]).map(k=>k.toLowerCase()));
+  anim.push(t=>{ let cur=null; for(const gr of groups) if(t>=W[gr[0]][1]-0.05) cur=gr; if(!cur || t>W[cur[cur.length-1]][1]+1.2){ C.innerHTML=''; return; }
+    C.innerHTML='<span class="box">'+cur.map(i=>{ const raw=W[i][0].replace(/["“”]/g,''); const on=t>=W[i][1]-0.03; const k=KEY.has(norm(raw));
+      return `<span class="w${k?' k':''}" style="opacity:${on?1:0.35}">${raw}</span>`; }).join(' ')+'</span>'; }); })();
+
+// --- tipos de escena ---
+const T = {
+  title(L,b){ const c=b.bg==='light'?INK:BONE;
+    el(`<div class="abs mono" style="left:120px; top:250px; font-size:40px; color:${G}">${b.label}</div>`,L);
+    const h=el(`<div class="abs" style="left:110px; top:320px; width:1250px; font-weight:900; font-size:${b.size||120}px; line-height:1.02; letter-spacing:-4px; color:${c}">${b.title}</div>`,L); pop(h,b.t);
+    if(b.sub) fadeIn(el(`<div class="abs" style="left:120px; top:${b.subTop||640}px; width:1200px; font-weight:600; font-size:44px; color:${b.bg==='light'?'#4A5A52':'#9DB3A8'}">${b.sub}</div>`,L), b.t+0.4); },
+  big(L,b){ const c=b.bg==='light'?INK:BONE; const e=el(`<div class="abs" style="left:100px; width:1300px; top:${b.top||260}px; text-align:center; font-weight:900; font-size:${b.size||110}px; line-height:1.05; letter-spacing:-3px; color:${c}">${b.html}</div>`,L); pop(e,b.t);
+    (b.more||[]).forEach(([html,a,top,size])=>{ const m=el(`<div class="abs" style="left:100px; width:1300px; top:${top}px; text-align:center; font-weight:800; font-size:${size||60}px; color:${c}">${html}</div>`,L); pop(m,at(a)); }); },
+  counter(L,b){ const c=b.bg==='light'?INK:BONE; const e=el(`<div class="abs" style="left:100px; width:1300px; top:250px; text-align:center; font-weight:900; font-size:${b.size||150}px; letter-spacing:-5px; color:${G}; font-variant-numeric:tabular-nums"></div>`,L);
+    const d=b.dur||2.5; anim.push(t=>{ const k=eo(t,b.t,d); e.textContent=b.fmt(b.from+(b.to-b.from)*k); });
+    fadeIn(el(`<div class="abs" style="left:100px; width:1300px; top:470px; text-align:center; font-weight:800; font-size:64px; color:${c}">${b.label}</div>`,L), b.t+0.3);
+    if(b.src) fadeIn(el(`<div class="abs mono" style="left:100px; width:1300px; top:600px; text-align:center; font-size:24px; color:#8a978f">${b.src}</div>`,L), b.t+0.6); },
+  cards(L,b){ const n=b.items.length, w=b.w||Math.min(380,(1240-(n-1)*36)/n), x0=100+(1300-(n*w+(n-1)*36))/2;
+    if(b.head) pop(el(`<div class="abs" style="left:100px; width:1300px; top:170px; text-align:center; font-weight:900; font-size:72px; letter-spacing:-2px; color:${b.bg==='light'?INK:BONE}">${b.head}</div>`,L), b.t);
+    b.items.forEach(([ic,ti,sub,a,hl],i)=>{ const c=el(`<div class="abs card" style="left:${x0+i*(w+36)}px; top:${b.top||330}px; width:${w}px; min-height:${b.h||420}px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; ${hl?`outline:12px solid ${G}`:''}"><div style="font-size:${b.ic||100}px; line-height:1">${ic}</div><div style="font-weight:900; font-size:${b.ts||46}px; line-height:1.1">${ti}</div>${sub?`<div style="font-weight:600; font-size:30px; color:#4A5A52; line-height:1.25">${sub}</div>`:''}</div>`,L); pop(c, a?at(a):b.t+0.3+i*0.25); }); },
+  vs(L,b){ [[b.left,0],[b.right,1]].forEach(([s,i])=>{ const x=110+i*660; const c=el(`<div class="abs card" style="left:${x}px; top:${b.top||200}px; width:620px; min-height:540px; border-top:22px solid ${i?G:CORAL}"><div class="mono" style="font-size:28px; color:${i?GD:CORAL}">${s.label}</div><div style="font-size:120px; margin:18px 0">${s.icon}</div><div style="font-weight:900; font-size:46px; line-height:1.15">${s.text}</div></div>`,L); pop(c, s.a?at(s.a):b.t+i*0.6); }); },
+  check(L,b){ const c=b.bg==='light'?INK:BONE; pop(el(`<div class="abs mono" style="left:120px; top:180px; font-size:34px; color:${INK}; background:${G}; padding:10px 22px; border-radius:10px">${b.head||'CÓMO APLICARLO HOY'}</div>`,L), b.t);
+    b.items.forEach(([tx,a],i)=>{ const y=280+i*(b.step||118); const r=el(`<div class="abs card" style="left:110px; top:${y}px; width:1260px; padding:22px 30px; display:flex; align-items:center; gap:26px"><div class="bx" style="width:54px; height:54px; flex:none; border-radius:14px; border:5px solid ${GD}; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:900; color:#fff"></div><div style="font-weight:800; font-size:${b.size||40}px; line-height:1.2">${tx}</div></div>`,L);
+      const ta=at(a); pop(r,ta); const bx=r.querySelector('.bx'); anim.push(t=>{ const on=t>=ta+0.6; bx.style.background=on?GD:'transparent'; bx.textContent=on?'✓':''; }); }); },
+  chat(L,b){ const ph=el(`<div class="abs" style="left:${b.x||420}px; top:150px; width:640px; height:720px; background:#111; border-radius:56px; padding:18px; box-shadow:0 30px 60px rgba(0,0,0,.4)"><div style="width:100%; height:100%; border-radius:42px; background:#ECE5DD; overflow:hidden"><div style="height:100px; background:#075E54; color:#fff; display:flex; align-items:center; padding:0 28px; font-weight:800; font-size:32px">${b.name||'Cliente'}</div><div class="ch" style="padding:24px; display:flex; flex-direction:column; gap:16px"></div></div></div>`,L); pop(ph,b.t,false);
+    const ch=ph.querySelector('.ch'); b.lines.forEach(([who,tx,a])=>{ const m=el(`<div style="max-width:86%; align-self:${who==='out'?'flex-end':'flex-start'}; background:${who==='out'?'#DCF8C6':'#fff'}; padding:16px 22px; border-radius:22px; font-weight:600; font-size:32px; line-height:1.25">${tx}</div>`,ch); pop(m,at(a)); }); },
+  timeline(L,b){ const c=b.bg==='light'?INK:BONE; const line=el(`<div class="abs" style="left:160px; top:520px; height:10px; width:0; background:${G}; border-radius:5px"></div>`,L); anim.push(t=>{ line.style.width=(1180*eo(t,b.t,1.2))+'px'; });
+    const n=b.items.length; b.items.forEach(([top,bot,a,strike],i)=>{ const x=160+i*(1180/(n-1)); const e=el(`<div class="abs" style="left:${x-170}px; top:330px; width:340px; text-align:center"><div style="font-weight:900; font-size:64px; color:${c}; ${strike?`text-decoration:line-through; text-decoration-color:${CORAL}`:''}">${top}</div><div style="width:40px; height:40px; border-radius:50%; background:${G}; margin:60px auto 26px; border:8px solid ${b.bg==='light'?BONE:INK}"></div><div style="font-weight:700; font-size:36px; color:${b.bg==='light'?'#4A5A52':'#9DB3A8'}">${bot}</div></div>`,L); pop(e,at(a)); }); },
+};
+B.forEach(b=>{ const L=el('<div class="layer"></div>'); const a=b.t-0.05, z=b.end-0.05; anim.push(t=>{ L.style.opacity=(t>=a&&t<z)?1:0; }); if(b.t>0.1) WHOOSH.push(b.t); T[b.type](L,b); });
+
+window.DURATION = W[W.length-1][1] + 3;
+window.render = t => anim.forEach(f=>f(t));
+</script>
+</body></html>

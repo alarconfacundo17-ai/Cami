@@ -8,13 +8,13 @@ const fs = require('fs'), path = require('path');
 (async () => {
   const dir = path.resolve(process.argv[2]);
   const SPEED = parseFloat(process.env.SPEED || '1');
-  const words = JSON.parse(fs.readFileSync(path.join(dir, 'words.json'), 'utf8')).map(([w, t]) => [w, t / SPEED]);
+  const words = JSON.parse(fs.readFileSync(path.join(dir, 'words.json'), 'utf8')).map(([w, t, ...r]) => [w, t / SPEED, ...r]);
   fs.writeFileSync(path.join(dir, 'words.js'), 'window.WORDS=' + JSON.stringify(words) + ';');
   fs.copyFileSync(path.join(__dirname, process.env.TEMPLATE || 'template.html'), path.join(dir, 'index.html'));
 
   const FPS = 30;
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
+  const page = await browser.newPage({ viewport: { width: +(process.env.W || 1080), height: +(process.env.H || 1920) } });
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('file://' + path.join(dir, 'index.html'));
